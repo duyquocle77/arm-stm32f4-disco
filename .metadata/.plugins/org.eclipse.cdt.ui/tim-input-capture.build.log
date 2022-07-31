@@ -1,0 +1,17 @@
+14:36:21 **** Build of configuration Debug for project tim-input-capture ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../USB_HOST/App -I../USB_HOST/Target -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Middlewares/ST/STM32_USB_Host_Library/Core/Inc -I../Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Inc -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "tim-input-capture.elf" @"objects.list"   -mcpu=cortex-m4 -T"D:\LeDuyQuoc\arm-stm32f411ve-discovery\stm32cubeide\f411vet6-disco\tim-input-capture\STM32F411VETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="tim-input-capture.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: tim-input-capture.elf
+ 
+arm-none-eabi-size   tim-input-capture.elf 
+arm-none-eabi-objdump -h -S  tim-input-capture.elf  > "tim-input-capture.list"
+   text	   data	    bss	    dec	    hex	filename
+   8488	     12	   2356	  10856	   2a68	tim-input-capture.elf
+Finished building: default.size.stdout
+ 
+Finished building: tim-input-capture.list
+ 
+
+14:36:21 Build Finished. 0 errors, 0 warnings. (took 916ms)
+

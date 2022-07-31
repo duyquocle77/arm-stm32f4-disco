@@ -1,0 +1,10 @@
+15:59:34 **** Incremental Build of configuration Debug for project tim-input-capture-pwm ****
+make -j8 all 
+arm-none-eabi-size   tim-input-capture-pwm.elf 
+   text	   data	    bss	    dec	    hex	filename
+   8480	     12	   2356	  10848	   2a60	tim-input-capture-pwm.elf
+Finished building: default.size.stdout
+ 
+
+15:59:35 Build Finished. 0 errors, 0 warnings. (took 357ms)
+

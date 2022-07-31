@@ -1,0 +1,360 @@
+#include "main.h"
+#include <stdint.h>
+#include <string.h>
+
+/*leds on-board*/
+#define LED_4 12
+#define LED_3 13
+#define LED_5 14
+#define LED_6 15
+
+typedef enum
+{
+	NO_CLICK = 0,
+	SINGLE_CLICK,
+	LONG_CLICK,
+	DOUBLE_CLICK,
+	TRIPLE_CLICK,
+} eButton_state;
+
+void vectortable_move();
+
+void gpio_button_init();
+uint8_t gpio_button_read();
+eButton_state tim_button_4state();
+
+void gpio_led_init();
+void gpio_led_write(uint8_t LED_x, uint8_t value);
+void gpio_led_toggle(uint8_t LED_x);
+
+void tim4_pwm_ch1_start(uint16_t prescaler, uint16_t count, uint8_t duty_cycle);
+void tim4_pwm_ch1_stop();
+
+void tim1_ic_ch1_init();
+
+void sys_delay_ms(uint32_t time_milisec);
+
+uint32_t *time;
+uint32_t *cnt;
+uint32_t duty;
+
+uint8_t flag;
+uint32_t time_press;
+uint32_t time_click;
+
+int main(void)
+{
+	vectortable_move();
+	gpio_button_init();
+	gpio_led_init();
+	tim1_ic_ch1_init();
+
+	while (1)
+	{
+		duty = *cnt * 100 / *time;
+
+		eButton_state button = tim_button_4state();
+		switch(button)
+		{
+			case NO_CLICK:
+				break;
+			case SINGLE_CLICK:
+				gpio_led_toggle(LED_4);
+				break;
+			case LONG_CLICK:
+				gpio_led_toggle(LED_3);
+				break;
+			case DOUBLE_CLICK:
+				gpio_led_toggle(LED_5);
+				break;
+			case TRIPLE_CLICK:
+				gpio_led_toggle(LED_6);
+				break;
+		}
+	}
+
+	return 0;
+}
+
+/*
+ * @brief	: move vector table from FLASH to RAM
+ * @param	: None
+ * @retval	: None
+ */
+void vectortable_move()
+{
+	/*
+	 * size(vector_table) = 0x194 + 0x4 - 0x00 = 0x198
+	 * */
+	/* move vector table from flash to ram */
+	void *volatile dst = (void *)0x20000000;	// RAM_address
+	void *volatile src = (void *)0x08000000;	// FLASH_address
+	memcpy(dst, src, 0x198);
+
+	/**/
+	uint32_t volatile *const VTOR = (uint32_t *)(0xE000ED08);
+	*VTOR = 0x20000000;
+}
+
+/*
+ * @brief	: initialize A.0 as button
+ * @param	: None
+ * @retval	: None
+ */
+void gpio_button_init()
+{
+	/* GPIO Ports Clock Enable */
+	__HAL_RCC_GPIOA_CLK_ENABLE();
+
+	/*Configure GPIO pin Input  */
+	volatile uint32_t *const GPIOA_MODER = (uint32_t *)(0x40020000 + 0x00);
+	volatile uint32_t *const GPIOA_PUPDR = (uint32_t *)(0x40020000 + 0x0c);
+
+	*GPIOA_MODER &= ~(0b11<<0);	// Set PA0 pin Input
+	*GPIOA_PUPDR &= ~(0b11<<0);	// Set PA0 pin Floating-level
+}
+
+/*
+ * @brief	: read button status
+ * @param	: None
+ * @retval 	: uint8_t:
+ * 		@arg 1 button in active
+ * 		@arg 2 button in in-active
+ */
+uint8_t gpio_button_read()
+{
+	volatile uint32_t *const GPIOA_IDR = (uint32_t *)(0x40020000 + 0x10);
+	if(((*GPIOA_IDR >> 1) & 1) == 1)
+		return 1;
+	else
+		return 0;
+}
+
+/*
+ * @brief	: initialize D.12, D.13, D.14, D.15 as leds on-board
+ * @param	: None
+ * @retval	: None
+ */
+void gpio_led_init()
+{
+  /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOD_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  volatile uint32_t *const GPIOD_MODER = (uint32_t *)(0x40020c00 + 0x00);
+  *GPIOD_MODER &= ~(0b11111111<<24);
+  *GPIOD_MODER |= (0b01010101<<24);
+}
+
+/*
+ * @brief	: set or reset led
+ * @param	: LED_x
+ * 		x can be (x: 3...6)
+ * @param	: state
+ * 		@arg 1 : SET
+ * 		@arg 0 : RESET
+ * @retval	: None
+ */
+void gpio_led_write(uint8_t LED_x, uint8_t state)
+{
+  volatile uint32_t *const GPIOD_ODR = (uint32_t *)(0x40020c00 + 0x14);
+  if (state == 1)
+	  *GPIOD_ODR |= (1 << LED_x);
+  else
+	  *GPIOD_ODR &= ~(1 << LED_x);
+}
+
+/*
+ * @brief	: toggle led state
+ * @param	: LED_x
+ * 		x can be (x: 3...6)
+ * @retval	: None
+ */
+void gpio_led_toggle(uint8_t LED_x)
+{
+  volatile uint32_t *const GPIOD_ODR = (uint32_t *)(0x40020c00 + 0x14);
+  volatile uint32_t *const GPIOD_IDR = (uint32_t *)(0x40020c00 + 0x10);
+  if (((*GPIOD_IDR >> LED_x) & 1) == 0)
+	  *GPIOD_ODR |= (1<<LED_x);
+  else
+	  *GPIOD_ODR &= ~(1<<LED_x);
+}
+
+void sys_delay_ms(uint32_t time_milisec)
+{
+	volatile uint32_t *const SYS_CSR = (uint32_t *)(0xe000e010 + 0x00);
+	volatile uint32_t *const SYS_RVR = (uint32_t *)(0xe000e010 + 0x04);
+
+	/*enable clock*/
+	*SYS_CSR |= (1<<2);
+
+	/*enable the counter*/
+	*SYS_CSR |= (1<<0);
+
+	/*set count*/
+	*SYS_RVR = 160000 - 1;
+	// F = 16 Mhz -> 1 count = 16 us
+
+	/*delay*/
+	for(uint32_t i = 0; i <= time_milisec; i++)
+		while(0 == ((*SYS_CSR >> 16) & 1));		// check COUNTFLAG, every 1 ms -> COUNTFLAG = 1
+
+	/*disable the counter*/
+	*SYS_CSR &= ~(1 << 0);
+}
+
+void tim4_pwm_ch1_start(uint16_t prescaler, uint16_t count, uint8_t duty_cycle)
+{
+	__HAL_RCC_GPIOD_CLK_ENABLE();
+	__HAL_RCC_TIM4_CLK_ENABLE();
+
+	volatile uint32_t *const GPIOD_MODER = (uint32_t *)(0x40020c00 + 0x00);
+	volatile uint32_t *const GPIOD_AFRH  = (uint32_t *)(0x40020c00 + 0x24);
+	volatile uint32_t *const TIM4_CR1    = (uint32_t *)(0x40000800 + 0x00);
+	volatile uint32_t *const TIM4_CCMR1  = (uint32_t *)(0x40000800 + 0x18);
+	volatile uint32_t *const TIM4_CCER   = (uint32_t *)(0x40000800 + 0x20);
+	volatile uint32_t *const TIM4_PCR    = (uint32_t *)(0x40000800 + 0x28);
+	volatile uint32_t *const TIM4_ARR    = (uint32_t *)(0x40000800 + 0x2c);
+	volatile uint32_t *const TIM4_CCR1   = (uint32_t *)(0x40000800 + 0x34);
+
+	/*alternate mode*/
+	*GPIOD_MODER &= ~(0b11 << (2 * 12));
+	*GPIOD_MODER |=  (0b10 << (2 * 12));
+
+	/*alternate function 2*/
+	*GPIOD_AFRH &= ~(0b1111 << (4 * 4));
+	*GPIOD_AFRH |=  (2 << (4 * 4));
+
+	*TIM4_ARR = count - 1;							/*set count*/
+	*TIM4_PCR = prescaler - 1;						/*set prescaler*/
+
+	*TIM4_CCR1 = (duty_cycle * (*TIM4_ARR + 1)) / 100;	/*set duty cycle*/
+
+	/*up-counter mode*/
+	*TIM4_CR1 &= ~(1 << 4);
+
+	/*pwm mode 1: CNT < CCR1 -> active*/
+	*TIM4_CCMR1 &= ~(0b111<<4);
+	*TIM4_CCMR1 |= (0b11 << 5);
+
+	*TIM4_CCER |= (1 << 0);						/*enable OC1 chanel 1*/
+	*TIM4_CR1  |= (1 << 0);						/*enable counter */
+}
+
+void tim4_pwm_ch1_stop()
+{
+	volatile uint32_t *const TIM4_CR1   = (uint32_t *)(0x40000800 + 0x00);
+	volatile uint32_t *const TIM4_CCER  = (uint32_t *)(0x40000800 + 0x20);
+	volatile uint32_t *const TIM4_CCR1  = (uint32_t *)(0x40000800 + 0x34);
+
+	*TIM4_CCR1 = 0;								/*set duty cycle*/
+
+	*TIM4_CCER &= ~(1 << 0);						/*disable OC1 chanel 1*/
+	*TIM4_CR1  &= ~(1 << 0);						/*disable counter */
+
+	__HAL_RCC_TIM4_CLK_DISABLE();
+}
+
+void tim1_ic_ch1_init(uint32_t *rising, uint32_t *falling)
+{
+	__HAL_RCC_GPIOE_CLK_ENABLE();
+	__HAL_RCC_TIM1_CLK_ENABLE();
+
+	volatile uint32_t *const GPIOE_MODER = (uint32_t *)(0x40021000 + 0x00);
+	volatile uint32_t *const GPIOE_AFRH  = (uint32_t *)(0x40021000 + 0x24);
+	volatile uint32_t *const TIM1_CR1    = (uint32_t *)(0x40010000 + 0x00);
+	volatile uint32_t *const TIM1_SMCR   = (uint32_t *)(0x40010000 + 0x08);
+	volatile uint32_t *const TIM1_CCMR1  = (uint32_t *)(0x40010000 + 0x18);
+	volatile uint32_t *const TIM1_CCER   = (uint32_t *)(0x40010000 + 0x20);
+	volatile uint32_t *const TIM1_ARR    = (uint32_t *)(0x40010000 + 0x2c);
+	volatile uint32_t *const TIM1_PCR    = (uint32_t *)(0x40010000 + 0x28);
+	volatile uint32_t *const TIM1_CCR1   = (uint32_t *)(0x40010000 + 0x34);
+	volatile uint32_t *const TIM1_CCR2   = (uint32_t *)(0x40010000 + 0x38);
+
+	/*alternate mode*/
+	*GPIOE_MODER &= ~((0b11 << (2 * 9)) | (0b11 << (2 * 11)));
+	*GPIOE_MODER |=   (0b10 << (2 * 9)) | (0b11 << (2 * 11));
+
+	/*alternate function 1*/
+	*GPIOE_AFRH &= ~((0b1111 << (4 * 1)) | (0b1111 << (4 * 3)));
+	*GPIOE_AFRH |=   (1 << (4 * 1)) | (1 << (4 * 3));
+
+	*TIM1_ARR = 0xFFFF;
+	*TIM1_PCR = 16000 - 1;
+
+	/*select TRGI as TI1*/
+	*TIM1_SMCR &= ~(0b111<<4);
+	*TIM1_SMCR |=  (0b101<<4);
+
+	/*slave mode as Reset mode*/
+	*TIM1_SMCR &= ~(0b111<<0);
+	*TIM1_SMCR |=  (0b100<<0);
+
+	/*IC1 mapped on TI1*/
+	*TIM1_CCMR1 &= ~(0b11<<0);
+	*TIM1_CCMR1 |=  (0b01<<0);
+
+	/*capture rising-edge*/
+	*TIM1_CCER &= ~((1 << 1) | (1 << 3));
+
+	/*IC2 mapped on TI1*/
+	*TIM1_CCMR1 &= ~(0b11<<8);
+	*TIM1_CCMR1 |=  (0b10<<8);
+
+	/*capture falling-edge*/
+	*TIM1_CCER &= ~(1<<7);
+	*TIM1_CCER |=  (1<<5);
+
+	/*enable CC1 chanel 1*/
+	*TIM1_CCER |= (1 << 0);
+
+	/*start count*/
+	*TIM1_CR1 |= (1 << 0) | (1 << 4);
+
+	*rising  = *TIM1_CCR1 + 1;
+	*falling = *TIM1_CCR2 + 1;
+}
+
+
+eButton_state tim_button_4state()
+{
+	volatile uint32_t *const TIM1_CCR1   = (uint32_t *)(0x40010000 + 0x34);
+	volatile uint32_t *const TIM1_CCR2   = (uint32_t *)(0x40010000 + 0x38);
+
+	time_click = *TIM1_CCR1;
+	time_press = *TIM1_CCR2;
+
+	while(gpio_button_read() == 1)
+	{
+		HAL_Delay(200);	// delay chong nhieu nut nhan
+		flag = 1;
+	}
+
+	if(flag == 1)
+	{
+		while(gpio_button_read() == 0)
+		{
+			if(time_click > 200)
+			{
+				if(time_press <= 200)
+				{
+					flag = 0;
+					return SINGLE_CLICK;
+				}
+				else
+				{
+					flag = 0;
+					return LONG_CLICK;
+				}
+			}
+		}
+
+		while(gpio_button_read() == 1)
+		{
+			HAL_Delay(200);	// delay chong nhieu nut nhan
+			flag = 0;
+			return DOUBLE_CLICK;
+		}
+	}
+	return NO_CLICK;
+}

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;tim-input-capture&apos; to &apos;tim-input-capture-pwm&apos;" description="Rename resource &apos;tim-input-capture&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="/tim-input-capture" name="tim-input-capture-pwm" stamp="1658821248323" updateReferences="true"/>
+</session>

@@ -1,0 +1,6 @@
+../Core/Src/main.c:18:5:main	16	static
+../Core/Src/main.c:43:6:vectortable_move	24	static
+../Core/Src/main.c:58:6:sys_delay_ms	32	static
+../Core/Src/main.c:81:6:tim4_pwm_ch1_start	56	static
+../Core/Src/main.c:119:6:tim4_pwm_ch1_stop	24	static
+../Core/Src/main.c:133:6:tim1_ic_ch1_init	48	static

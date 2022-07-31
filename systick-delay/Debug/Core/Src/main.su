@@ -1,0 +1,9 @@
+../Core/Src/main.c:32:5:main	8	static
+../Core/Src/main.c:59:6:custom_delay	24	static,ignoring_inline_asm
+../Core/Src/main.c:72:6:gpio_led_init	16	static
+../Core/Src/main.c:92:6:gpio_led_write	24	static
+../Core/Src/main.c:106:6:vectortable_move	24	static
+../Core/Src/main.c:121:6:tim_systick_init	16	static
+../Core/Src/main.c:142:6:systick_handler	4	static
+../Core/Src/main.c:147:6:delay_ms	16	static
+../Core/Src/main.c:153:6:tim_systick_delay_ms	24	static
