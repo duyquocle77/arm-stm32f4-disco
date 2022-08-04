@@ -104,8 +104,7 @@ int main(void)
  80001f8:	4b0c      	ldr	r3, [pc, #48]	; (800022c <main+0x54>)
  80001fa:	603b      	str	r3, [r7, #0]
 
-	while (1)
-	{
+	while (1) {
 		time  = *TIM1_CCR1 + 1;
  80001fc:	687b      	ldr	r3, [r7, #4]
  80001fe:	681b      	ldr	r3, [r3, #0]
@@ -137,12 +136,12 @@ int main(void)
  8000238:	20000028 	.word	0x20000028
 
 0800023c <vectortable_move>:
- * @brief	: move vector table from FLASH to RAM
- * @param	: None
- * @retval	: None
+ *\param[in]
+ *\param[out]
+ *\retval
  */
-void vectortable_move()
-{
+void
+vectortable_move() {
  800023c:	b580      	push	{r7, lr}
  800023e:	b084      	sub	sp, #16
  8000240:	af00      	add	r7, sp, #0
@@ -179,12 +178,12 @@ void vectortable_move()
  8000270:	e000ed08 	.word	0xe000ed08
 
 08000274 <tim4_pwm_ch1_start>:
-	/*disable the counter*/
-	*SYS_CSR &= ~(1 << 0);
-}
-
-void tim4_pwm_ch1_start(uint16_t prescaler, uint16_t count, uint8_t duty_cycle)
-{
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+tim4_pwm_ch1_start(uint16_t prescaler, uint16_t count, uint8_t duty_cycle) {
  8000274:	b480      	push	{r7}
  8000276:	b08d      	sub	sp, #52	; 0x34
  8000278:	af00      	add	r7, sp, #0
@@ -352,12 +351,12 @@ void tim4_pwm_ch1_start(uint16_t prescaler, uint16_t count, uint8_t duty_cycle)
  80003a8:	51eb851f 	.word	0x51eb851f
 
 080003ac <tim1_ic_ch1_init>:
+	*TIM4_CR1  &= ~(1 << 0);						/*disable counter */
 
 	__HAL_RCC_TIM4_CLK_DISABLE();
 }
 
-void tim1_ic_ch1_init()
-{
+void tim1_ic_ch1_init() {
  80003ac:	b480      	push	{r7}
  80003ae:	b08b      	sub	sp, #44	; 0x2c
  80003b0:	af00      	add	r7, sp, #0

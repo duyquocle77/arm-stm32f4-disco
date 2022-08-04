@@ -3,12 +3,9 @@
 #include <string.h>
 
 void vectortable_move();
-
 void tim4_pwm_ch1_start(uint16_t prescaler, uint16_t count, uint8_t duty_cycle);
 void tim4_pwm_ch1_stop();
-
 void tim1_ic_ch1_init();
-
 void sys_delay_ms(uint32_t time_milisec);
 
 uint32_t time;
@@ -25,8 +22,7 @@ int main(void)
 	volatile uint32_t *const TIM1_CCR1   = (uint32_t *)(0x40010000 + 0x34);
 	volatile uint32_t *const TIM1_CCR2   = (uint32_t *)(0x40010000 + 0x38);
 
-	while (1)
-	{
+	while (1) {
 		time  = *TIM1_CCR1 + 1;
 		cnt   = *TIM1_CCR2 + 1;
 		duty = cnt * 100 / time;
@@ -36,12 +32,13 @@ int main(void)
 }
 
 /*
- * @brief	: move vector table from FLASH to RAM
- * @param	: None
- * @retval	: None
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
  */
-void vectortable_move()
-{
+void
+vectortable_move() {
 	/*
 	 * size(vector_table) = 0x194 + 0x4 - 0x00 = 0x198
 	 * */
@@ -55,8 +52,14 @@ void vectortable_move()
 	*VTOR = 0x20000000;
 }
 
-void sys_delay_ms(uint32_t time_milisec)
-{
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+sys_delay_ms(uint32_t time_milisec) {
 	volatile uint32_t *const SYS_CSR = (uint32_t *)(0xe000e010 + 0x00);
 	volatile uint32_t *const SYS_RVR = (uint32_t *)(0xe000e010 + 0x04);
 
@@ -72,15 +75,22 @@ void sys_delay_ms(uint32_t time_milisec)
 	//			  ->     16 000 count = 0.001s
 
 	/*delay*/
-	for(uint32_t i = 0; i <= time_milisec; i++)
-		while(0 == ((*SYS_CSR >> 16) & 1));		// check COUNTFLAG, every 1 ms -> COUNTFLAG = 1
+	for (uint32_t i = 0; i <= time_milisec; i++) {
+		while(0 == ((*SYS_CSR >> 16) & 1)) {}		// check COUNTFLAG, every 1 ms -> COUNTFLAG = 1
+	}
 
 	/*disable the counter*/
 	*SYS_CSR &= ~(1 << 0);
 }
 
-void tim4_pwm_ch1_start(uint16_t prescaler, uint16_t count, uint8_t duty_cycle)
-{
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+tim4_pwm_ch1_start(uint16_t prescaler, uint16_t count, uint8_t duty_cycle) {
 	__HAL_RCC_GPIOD_CLK_ENABLE();
 	__HAL_RCC_TIM4_CLK_ENABLE();
 
@@ -117,8 +127,13 @@ void tim4_pwm_ch1_start(uint16_t prescaler, uint16_t count, uint8_t duty_cycle)
 	*TIM4_CR1  |= (1 << 0);						/*enable counter */
 }
 
-void tim4_pwm_ch1_stop()
-{
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void tim4_pwm_ch1_stop() {
 	volatile uint32_t *const TIM4_CR1   = (uint32_t *)(0x40000800 + 0x00);
 	volatile uint32_t *const TIM4_CCER  = (uint32_t *)(0x40000800 + 0x20);
 	volatile uint32_t *const TIM4_CCR1  = (uint32_t *)(0x40000800 + 0x34);
@@ -131,8 +146,7 @@ void tim4_pwm_ch1_stop()
 	__HAL_RCC_TIM4_CLK_DISABLE();
 }
 
-void tim1_ic_ch1_init()
-{
+void tim1_ic_ch1_init() {
 	__HAL_RCC_GPIOE_CLK_ENABLE();
 	__HAL_RCC_TIM1_CLK_ENABLE();
 

@@ -27,23 +27,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  00020404  2**0
                   CONTENTS, READONLY
- 12 .debug_info   00001690  00000000  00000000  00020434  2**0
+ 12 .debug_info   00001698  00000000  00000000  00020434  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 000005a7  00000000  00000000  00021ac4  2**0
+ 13 .debug_abbrev 000005d2  00000000  00000000  00021acc  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00000218  00000000  00000000  00022070  2**3
+ 14 .debug_aranges 00000218  00000000  00000000  000220a0  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_ranges 000001d0  00000000  00000000  00022288  2**3
+ 15 .debug_ranges 000001d0  00000000  00000000  000222b8  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  000145ae  00000000  00000000  00022458  2**0
+ 16 .debug_macro  000145ae  00000000  00000000  00022488  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00002a4f  00000000  00000000  00036a06  2**0
+ 17 .debug_line   00002a47  00000000  00000000  00036a36  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    00081d7e  00000000  00000000  00039455  2**0
+ 18 .debug_str    00081d89  00000000  00000000  0003947d  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000050  00000000  00000000  000bb1d3  2**0
+ 19 .comment      00000050  00000000  00000000  000bb206  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00000700  00000000  00000000  000bb224  2**2
+ 20 .debug_frame  00000700  00000000  00000000  000bb258  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -77,12 +77,12 @@ Disassembly of section .text:
  80001d4:	08000628 	.word	0x08000628
 
 080001d8 <main>:
+uint8_t data;
 uint8_t rx_dma_buffer[10];
 uint8_t rx_int_buffer[128];
 uint8_t rx_index;
 
-int main(void)
-{
+int main(void) {
  80001d8:	b580      	push	{r7, lr}
  80001da:	af00      	add	r7, sp, #0
 	vectortable_move();
@@ -95,7 +95,7 @@ int main(void)
 	interrupt_init();
  80001e8:	f000 f81e 	bl	8000228 <interrupt_init>
 
-	while (1)
+	while (1) {
  80001ec:	e7fe      	b.n	80001ec <main+0x14>
 	...
 
@@ -104,8 +104,8 @@ int main(void)
  * @param	: None
  * @retval	: None
  */
-void vectortable_move()
-{
+void
+vectortable_move() {
  80001f0:	b580      	push	{r7, lr}
  80001f2:	b084      	sub	sp, #16
  80001f4:	af00      	add	r7, sp, #0
@@ -139,9 +139,12 @@ void vectortable_move()
  8000224:	e000ed08 	.word	0xe000ed08
 
 08000228 <interrupt_init>:
-
-void interrupt_init()
-{
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
+void
+interrupt_init() {
  8000228:	b480      	push	{r7}
  800022a:	b085      	sub	sp, #20
  800022c:	af00      	add	r7, sp, #0
@@ -225,9 +228,12 @@ void interrupt_init()
  80002b8:	200000fc 	.word	0x200000fc
 
 080002bc <dma_init>:
-
-void dma_init()
-{
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
+void
+dma_init() {
  80002bc:	b480      	push	{r7}
  80002be:	b089      	sub	sp, #36	; 0x24
  80002c0:	af00      	add	r7, sp, #0
@@ -284,9 +290,9 @@ void dma_init()
  8000310:	220a      	movs	r2, #10
  8000312:	601a      	str	r2, [r3, #0]
 	/*peripheral address*/
-	*DMA1_S7PAR = (0x40004400 + 0x04);
- 8000314:	68fb      	ldr	r3, [r7, #12]
- 8000316:	4a0f      	ldr	r2, [pc, #60]	; (8000354 <dma_init+0x98>)
+	*DMA1_S7PAR = (uint32_t)USART2_DR;
+ 8000314:	69fa      	ldr	r2, [r7, #28]
+ 8000316:	68fb      	ldr	r3, [r7, #12]
  8000318:	601a      	str	r2, [r3, #0]
 	/*memory address*/
 	*DMA1_S7M0AR = (uint32_t)rx_dma_buffer;
@@ -330,12 +336,12 @@ void dma_init()
  800036c:	20000420 	.word	0x20000420
 
 08000370 <uart_init>:
-	/*disable the counter*/
-	*SYS_CSR &= ~(1 << 0);
-}
-
-void uart_init()
-{
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
+void
+uart_init() {
  8000370:	b480      	push	{r7}
  8000372:	b087      	sub	sp, #28
  8000374:	af00      	add	r7, sp, #0
@@ -463,11 +469,11 @@ void uart_init()
  8000444:	4000440c 	.word	0x4000440c
 
 08000448 <uart_receive_handler>:
-	/*clear RXNE*/
-	*UART2_SR &= ~(1 << 5);
-}
-
-void uart_receive_handler()
+ * \param[out]
+ * \retval
+ */
+void
+uart_receive_handler()
 {
  8000448:	b480      	push	{r7}
  800044a:	b083      	sub	sp, #12
@@ -497,14 +503,16 @@ void uart_receive_handler()
  800046e:	4b0c      	ldr	r3, [pc, #48]	; (80004a0 <uart_receive_handler+0x58>)
  8000470:	701a      	strb	r2, [r3, #0]
 
-	if (rx_index >= 50) rx_index = 0;
+	if (rx_index >= 50) {
  8000472:	4b0b      	ldr	r3, [pc, #44]	; (80004a0 <uart_receive_handler+0x58>)
  8000474:	781b      	ldrb	r3, [r3, #0]
  8000476:	2b31      	cmp	r3, #49	; 0x31
  8000478:	d902      	bls.n	8000480 <uart_receive_handler+0x38>
+		rx_index = 0;
  800047a:	4b09      	ldr	r3, [pc, #36]	; (80004a0 <uart_receive_handler+0x58>)
  800047c:	2200      	movs	r2, #0
  800047e:	701a      	strb	r2, [r3, #0]
+	}
 
 	/*clear RXNE*/
 	*USART2_SR &= ~(1 << 5);
@@ -525,13 +533,16 @@ void uart_receive_handler()
  80004a4:	2000042c 	.word	0x2000042c
 
 080004a8 <dma_transfer_handler>:
-
-void dma_transfer_handler()
-{
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
+void
+dma_transfer_handler() {
  80004a8:	b480      	push	{r7}
  80004aa:	b083      	sub	sp, #12
  80004ac:	af00      	add	r7, sp, #0
-	uint32_t volatile *const DMA_HIFCR    = (uint32_t *)(0x40026000 + 0x0C);
+	uint32_t volatile *const DMA1_HIFCR    = (uint32_t *)(0x40026000 + 0x0C);
  80004ae:	4b07      	ldr	r3, [pc, #28]	; (80004cc <dma_transfer_handler+0x24>)
  80004b0:	607b      	str	r3, [r7, #4]
 
@@ -540,7 +551,7 @@ void dma_transfer_handler()
  80004b2:	bf00      	nop
 
 	/*clear stream 7 transfer complete interrupt flag*/
-	*DMA_HIFCR |= (1 << 27);	// bit CTCIF7
+	*DMA1_HIFCR |= (1 << 27);	// bit CTCIF7
  80004b4:	687b      	ldr	r3, [r7, #4]
  80004b6:	681b      	ldr	r3, [r3, #0]
  80004b8:	f043 6200 	orr.w	r2, r3, #134217728	; 0x8000000

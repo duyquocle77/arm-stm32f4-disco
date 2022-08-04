@@ -81,8 +81,8 @@ uint8_t flag_2 = 0;	/*this flag is status of external button*/
 uint8_t cnt_1 = 0;	/*this flag is to debug*/
 uint8_t cnt_2 = 0;	/*this flag is to debug*/
 
-int main(void)
-{
+int
+main(void) {
  80001d8:	b580      	push	{r7, lr}
  80001da:	af00      	add	r7, sp, #0
 	HAL_Init();
@@ -96,9 +96,8 @@ int main(void)
 	exti1_init();
  80001ec:	f000 f8f8 	bl	80003e0 <exti1_init>
 
-	while (1)
-	{
-		if(flag_1 == 1)
+	while (1) {
+		if (flag_1 == 1) {
  80001f0:	4b0d      	ldr	r3, [pc, #52]	; (8000228 <main+0x50>)
  80001f2:	781b      	ldrb	r3, [r3, #0]
  80001f4:	2b01      	cmp	r3, #1
@@ -108,13 +107,15 @@ int main(void)
  80001fa:	200f      	movs	r0, #15
  80001fc:	f000 f842 	bl	8000284 <gpio_led_write>
  8000200:	e003      	b.n	800020a <main+0x32>
-		 else
+		}
+		 else {
 			gpio_led_write(LED_6, 0);
  8000202:	2100      	movs	r1, #0
  8000204:	200f      	movs	r0, #15
  8000206:	f000 f83d 	bl	8000284 <gpio_led_write>
+		 }
 
-		 if(flag_2 == 1)
+		if (flag_2 == 1) {
  800020a:	4b08      	ldr	r3, [pc, #32]	; (800022c <main+0x54>)
  800020c:	781b      	ldrb	r3, [r3, #0]
  800020e:	2b01      	cmp	r3, #1
@@ -124,24 +125,25 @@ int main(void)
  8000214:	200d      	movs	r0, #13
  8000216:	f000 f835 	bl	8000284 <gpio_led_write>
  800021a:	e7e9      	b.n	80001f0 <main+0x18>
-		 else
+		}
+		else {
 			gpio_led_write(LED_3, 0);
  800021c:	2100      	movs	r1, #0
  800021e:	200d      	movs	r0, #13
  8000220:	f000 f830 	bl	8000284 <gpio_led_write>
-		if(flag_1 == 1)
+		if (flag_1 == 1) {
  8000224:	e7e4      	b.n	80001f0 <main+0x18>
  8000226:	bf00      	nop
  8000228:	20000028 	.word	0x20000028
  800022c:	20000029 	.word	0x20000029
 
 08000230 <gpio_led_init>:
- * @brief	: initialize D.12, D.13, D.14, D.15 as leds on-board
- * @param	: None
- * @retval	: None
+ *\param[in]
+ *\param[out]
+ * \retval
  */
-void gpio_led_init()
-{
+void
+gpio_led_init() {
  8000230:	b480      	push	{r7}
  8000232:	b083      	sub	sp, #12
  8000234:	af00      	add	r7, sp, #0
@@ -187,12 +189,12 @@ void gpio_led_init()
  8000280:	40020c00 	.word	0x40020c00
 
 08000284 <gpio_led_write>:
- * 		@arg 1 : SET
- * 		@arg 0 : RESET
- * @retval	: None
+ *\param[in]
+ *\param[out]
+ * \retval
  */
-void gpio_led_write(uint8_t LED_x, uint8_t state)
-{
+void
+gpio_led_write(uint8_t LED_x, uint8_t state) {
  8000284:	b480      	push	{r7}
  8000286:	b085      	sub	sp, #20
  8000288:	af00      	add	r7, sp, #0
@@ -204,7 +206,7 @@ void gpio_led_write(uint8_t LED_x, uint8_t state)
   uint32_t *GPIOD_ODR = (uint32_t *)(0x40020c00 + 0x14);
  8000294:	4b0f      	ldr	r3, [pc, #60]	; (80002d4 <gpio_led_write+0x50>)
  8000296:	60fb      	str	r3, [r7, #12]
-  if (state == 1)
+  if (state == 1) {
  8000298:	79bb      	ldrb	r3, [r7, #6]
  800029a:	2b01      	cmp	r3, #1
  800029c:	d109      	bne.n	80002b2 <gpio_led_write+0x2e>
@@ -217,8 +219,10 @@ void gpio_led_write(uint8_t LED_x, uint8_t state)
  80002aa:	431a      	orrs	r2, r3
  80002ac:	68fb      	ldr	r3, [r7, #12]
  80002ae:	601a      	str	r2, [r3, #0]
-  else
+  }
+  else {
 	  *GPIOD_ODR &= ~(1 << LED_x);
+  }
 }
  80002b0:	e009      	b.n	80002c6 <gpio_led_write+0x42>
 	  *GPIOD_ODR &= ~(1 << LED_x);
@@ -241,12 +245,12 @@ void gpio_led_write(uint8_t LED_x, uint8_t state)
  80002d4:	40020c14 	.word	0x40020c14
 
 080002d8 <vectortable_move>:
- * @brief	: move vector table from FLASH to RAM
- * @param	: None
- * @retval	: None
+ *\param[in]
+ *\param[out]
+ * \retval
  */
-void vectortable_move()
-{
+void
+vectortable_move() {
  80002d8:	b580      	push	{r7, lr}
  80002da:	b084      	sub	sp, #16
  80002dc:	af00      	add	r7, sp, #0
@@ -283,12 +287,12 @@ void vectortable_move()
  800030c:	e000ed08 	.word	0xe000ed08
 
 08000310 <exti0_init>:
- * @brief	: initialize external interrupt EXTI0
- * @param	: None
- * @retval	: None
+ *\param[in]
+ *\param[out]
+ * \retval
  */
-void exti0_init()
-{
+void
+exti0_init() {
  8000310:	b480      	push	{r7}
  8000312:	b085      	sub	sp, #20
  8000314:	af00      	add	r7, sp, #0
@@ -345,12 +349,12 @@ void exti0_init()
  800036c:	20000058 	.word	0x20000058
 
 08000370 <EXTI0_IRQHandler>:
- * @brief	: handle vector interrupt EXTI0
- * @param	: None
- * @retval	: None
+ *\param[in]
+ *\param[out]
+ * \retval
  */
-void EXTI0_IRQHandler()
-{
+void
+EXTI0_IRQHandler() {
  8000370:	b480      	push	{r7}
  8000372:	b083      	sub	sp, #12
  8000374:	af00      	add	r7, sp, #0
@@ -374,12 +378,12 @@ void EXTI0_IRQHandler()
  8000394:	40013c14 	.word	0x40013c14
 
 08000398 <exti0_handler>:
- * @brief	: initialize external interrupt EXTI0
- * @param	: None
- * @retval	: None
+ *\param[in]
+ *\param[out]
+ * \retval
  */
-void exti0_handler()
-{
+void
+exti0_handler() {
  8000398:	b480      	push	{r7}
  800039a:	b083      	sub	sp, #12
  800039c:	af00      	add	r7, sp, #0
@@ -419,9 +423,12 @@ void exti0_handler()
  80003dc:	40013c14 	.word	0x40013c14
 
 080003e0 <exti1_init>:
-
-void exti1_init()
-{
+ *\param[in]
+ *\param[out]
+ * \retval
+ */
+void
+exti1_init() {
  80003e0:	b480      	push	{r7}
  80003e2:	b085      	sub	sp, #20
  80003e4:	af00      	add	r7, sp, #0
@@ -478,9 +485,12 @@ void exti1_init()
  800043c:	2000005c 	.word	0x2000005c
 
 08000440 <EXTI1_IRQHandler>:
-
-void EXTI1_IRQHandler()
-{
+ *\param[in]
+ *\param[out]
+ * \retval
+ */
+void
+EXTI1_IRQHandler() {
  8000440:	b480      	push	{r7}
  8000442:	b083      	sub	sp, #12
  8000444:	af00      	add	r7, sp, #0
@@ -507,12 +517,12 @@ void EXTI1_IRQHandler()
  8000464:	40013c14 	.word	0x40013c14
 
 08000468 <exti1_handler>:
- * @brief	: initialize external interrupt EXTI0
- * @param	: None
- * @retval	: None
+ *\param[in]
+ *\param[out]
+ * \retval
  */
-void exti1_handler()
-{
+void
+exti1_handler() {
  8000468:	b480      	push	{r7}
  800046a:	b083      	sub	sp, #12
  800046c:	af00      	add	r7, sp, #0

@@ -27,23 +27,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  0002000c  2**0
                   CONTENTS, READONLY
- 12 .debug_info   00002552  00000000  00000000  0002003c  2**0
+ 12 .debug_info   00002557  00000000  00000000  0002003c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 0000098f  00000000  00000000  0002258e  2**0
+ 13 .debug_abbrev 00000996  00000000  00000000  00022593  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00000338  00000000  00000000  00022f20  2**3
+ 14 .debug_aranges 00000338  00000000  00000000  00022f30  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_ranges 000002d0  00000000  00000000  00023258  2**3
+ 15 .debug_ranges 000002d0  00000000  00000000  00023268  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  00013f82  00000000  00000000  00023528  2**0
+ 16 .debug_macro  00013f82  00000000  00000000  00023538  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00003e59  00000000  00000000  000374aa  2**0
+ 17 .debug_line   00003e55  00000000  00000000  000374ba  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    0007ea07  00000000  00000000  0003b303  2**0
+ 18 .debug_str    0007ea07  00000000  00000000  0003b30f  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000050  00000000  00000000  000b9d0a  2**0
+ 19 .comment      00000050  00000000  00000000  000b9d16  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00000b20  00000000  00000000  000b9d5c  2**2
+ 20 .debug_frame  00000b20  00000000  00000000  000b9d68  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -114,12 +114,12 @@ int main(void)
 	...
 
 08000208 <gpio_led_init>:
- * @brief	: initialize D.12, D.13, D.14, D.15 as leds on-board
- * @param	: None
- * @retval	: None
+ *\param[in]
+ *\param[out]
+ *\retval
  */
-void gpio_led_init()
-{
+void
+gpio_led_init() {
  8000208:	b480      	push	{r7}
  800020a:	b083      	sub	sp, #12
  800020c:	af00      	add	r7, sp, #0
@@ -139,7 +139,7 @@ void gpio_led_init()
  8000228:	683b      	ldr	r3, [r7, #0]
 
   /*Configure GPIO pin Output Level */
-  uint32_t *GPIOD_MODER = (uint32_t *)(0x40020c00 + 0x00);
+  uint32_t volatile *const GPIOD_MODER = (uint32_t *)(0x40020c00 + 0x00);
  800022a:	4b0b      	ldr	r3, [pc, #44]	; (8000258 <gpio_led_init+0x50>)
  800022c:	607b      	str	r3, [r7, #4]
   *GPIOD_MODER &= ~(0b11111111<<24);
@@ -165,12 +165,12 @@ void gpio_led_init()
  8000258:	40020c00 	.word	0x40020c00
 
 0800025c <gpio_led_write>:
- * 		@arg 1 : ON
- * 		@arg 0 : OFF
- * @retval	: None
+ *\param[in]
+ *\param[out]
+ *\retval
  */
-void gpio_led_write(uint8_t LED_x, uint8_t state)
-{
+void
+gpio_led_write(uint8_t LED_x, uint8_t state) {
  800025c:	b480      	push	{r7}
  800025e:	b085      	sub	sp, #20
  8000260:	af00      	add	r7, sp, #0
@@ -179,10 +179,10 @@ void gpio_led_write(uint8_t LED_x, uint8_t state)
  8000266:	71fb      	strb	r3, [r7, #7]
  8000268:	4613      	mov	r3, r2
  800026a:	71bb      	strb	r3, [r7, #6]
-  uint32_t *GPIOD_ODR = (uint32_t *)(0x40020c00 + 0x14);
+	uint32_t volatile *const GPIOD_ODR = (uint32_t *)(0x40020c00 + 0x14);
  800026c:	4b0f      	ldr	r3, [pc, #60]	; (80002ac <gpio_led_write+0x50>)
  800026e:	60fb      	str	r3, [r7, #12]
-  if (state == 1)
+  if (state == 1) {
  8000270:	79bb      	ldrb	r3, [r7, #6]
  8000272:	2b01      	cmp	r3, #1
  8000274:	d109      	bne.n	800028a <gpio_led_write+0x2e>
@@ -195,8 +195,10 @@ void gpio_led_write(uint8_t LED_x, uint8_t state)
  8000282:	431a      	orrs	r2, r3
  8000284:	68fb      	ldr	r3, [r7, #12]
  8000286:	601a      	str	r2, [r3, #0]
-  else
+  }
+  else {
 	  *GPIOD_ODR &= ~(1 << LED_x);
+  }
 }
  8000288:	e009      	b.n	800029e <gpio_led_write+0x42>
 	  *GPIOD_ODR &= ~(1 << LED_x);
@@ -219,28 +221,29 @@ void gpio_led_write(uint8_t LED_x, uint8_t state)
  80002ac:	40020c14 	.word	0x40020c14
 
 080002b0 <gpio_led_effect_1>:
-
-void gpio_led_effect_1(uint8_t n)
-{
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+gpio_led_effect_1(uint8_t n) {
  80002b0:	b580      	push	{r7, lr}
  80002b2:	b084      	sub	sp, #16
  80002b4:	af00      	add	r7, sp, #0
  80002b6:	4603      	mov	r3, r0
  80002b8:	71fb      	strb	r3, [r7, #7]
-  uint32_t *GPIOD_ODR = (uint32_t *)(0x40020c00 + 0x14);
+	uint32_t volatile *const GPIOD_ODR = (uint32_t *)(0x40020c00 + 0x14);
  80002ba:	4b16      	ldr	r3, [pc, #88]	; (8000314 <gpio_led_effect_1+0x64>)
  80002bc:	60bb      	str	r3, [r7, #8]
   uint8_t i, j;
-  for(i = 0; i < n; i++)
+  for (i = 0; i < n; i++) {
  80002be:	2300      	movs	r3, #0
  80002c0:	73fb      	strb	r3, [r7, #15]
  80002c2:	e01d      	b.n	8000300 <gpio_led_effect_1+0x50>
-  {
-	  for(j = 12; j < 16; j++)
+	  for (j = 12; j < 16; j++) {
  80002c4:	230c      	movs	r3, #12
  80002c6:	73bb      	strb	r3, [r7, #14]
  80002c8:	e00e      	b.n	80002e8 <gpio_led_effect_1+0x38>
-	  {
 		  *GPIOD_ODR |= (1 << j);
  80002ca:	68bb      	ldr	r3, [r7, #8]
  80002cc:	681b      	ldr	r3, [r3, #0]
@@ -253,7 +256,7 @@ void gpio_led_effect_1(uint8_t n)
 		  HAL_Delay(200);
  80002dc:	20c8      	movs	r0, #200	; 0xc8
  80002de:	f000 f9e3 	bl	80006a8 <HAL_Delay>
-	  for(j = 12; j < 16; j++)
+	  for (j = 12; j < 16; j++) {
  80002e2:	7bbb      	ldrb	r3, [r7, #14]
  80002e4:	3301      	adds	r3, #1
  80002e6:	73bb      	strb	r3, [r7, #14]
@@ -268,7 +271,7 @@ void gpio_led_effect_1(uint8_t n)
 	  HAL_Delay(200);
  80002f4:	20c8      	movs	r0, #200	; 0xc8
  80002f6:	f000 f9d7 	bl	80006a8 <HAL_Delay>
-  for(i = 0; i < n; i++)
+  for (i = 0; i < n; i++) {
  80002fa:	7bfb      	ldrb	r3, [r7, #15]
  80002fc:	3301      	adds	r3, #1
  80002fe:	73fb      	strb	r3, [r7, #15]
@@ -287,28 +290,29 @@ void gpio_led_effect_1(uint8_t n)
  8000314:	40020c14 	.word	0x40020c14
 
 08000318 <gpio_led_effect_2>:
-
-void gpio_led_effect_2(uint8_t n)
-{
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+gpio_led_effect_2(uint8_t n) {
  8000318:	b580      	push	{r7, lr}
  800031a:	b084      	sub	sp, #16
  800031c:	af00      	add	r7, sp, #0
  800031e:	4603      	mov	r3, r0
  8000320:	71fb      	strb	r3, [r7, #7]
-	  uint32_t *GPIOD_ODR = (uint32_t *)(0x40020c00 + 0x14);
+	uint32_t volatile *const GPIOD_ODR = (uint32_t *)(0x40020c00 + 0x14);
  8000322:	4b16      	ldr	r3, [pc, #88]	; (800037c <gpio_led_effect_2+0x64>)
  8000324:	60bb      	str	r3, [r7, #8]
 	  uint8_t i, j;
-	  for(i = 0; i < n; i++)
+	  for (i = 0; i < n; i++) {
  8000326:	2300      	movs	r3, #0
  8000328:	73fb      	strb	r3, [r7, #15]
  800032a:	e01d      	b.n	8000368 <gpio_led_effect_2+0x50>
-	  {
-		  for(j = 15; j > 11; j--)
+		  for (j = 15; j > 11; j--) {
  800032c:	230f      	movs	r3, #15
  800032e:	73bb      	strb	r3, [r7, #14]
  8000330:	e00e      	b.n	8000350 <gpio_led_effect_2+0x38>
-		  {
 			  *GPIOD_ODR |= (1 << j);
  8000332:	68bb      	ldr	r3, [r7, #8]
  8000334:	681b      	ldr	r3, [r3, #0]
@@ -321,7 +325,7 @@ void gpio_led_effect_2(uint8_t n)
 			  HAL_Delay(200);
  8000344:	20c8      	movs	r0, #200	; 0xc8
  8000346:	f000 f9af 	bl	80006a8 <HAL_Delay>
-		  for(j = 15; j > 11; j--)
+		  for (j = 15; j > 11; j--) {
  800034a:	7bbb      	ldrb	r3, [r7, #14]
  800034c:	3b01      	subs	r3, #1
  800034e:	73bb      	strb	r3, [r7, #14]
@@ -336,7 +340,7 @@ void gpio_led_effect_2(uint8_t n)
 		  HAL_Delay(200);
  800035c:	20c8      	movs	r0, #200	; 0xc8
  800035e:	f000 f9a3 	bl	80006a8 <HAL_Delay>
-	  for(i = 0; i < n; i++)
+	  for (i = 0; i < n; i++) {
  8000362:	7bfb      	ldrb	r3, [r7, #15]
  8000364:	3301      	adds	r3, #1
  8000366:	73fb      	strb	r3, [r7, #15]
@@ -355,8 +359,11 @@ void gpio_led_effect_2(uint8_t n)
  800037c:	40020c14 	.word	0x40020c14
 
 08000380 <gpio_led_effect_3>:
-
-void gpio_led_effect_3()
+ *\param[out]
+ *\retval
+ */
+void
+gpio_led_effect_3()
 {
  8000380:	b580      	push	{r7, lr}
  8000382:	b082      	sub	sp, #8
@@ -364,14 +371,12 @@ void gpio_led_effect_3()
 	uint8_t i = 200;
  8000386:	23c8      	movs	r3, #200	; 0xc8
  8000388:	71fb      	strb	r3, [r7, #7]
-	while (i > 0)
+	while (i > 0) {
  800038a:	e01d      	b.n	80003c8 <gpio_led_effect_3+0x48>
-	{
-		for(uint8_t j = 12; j < 16; j++)
+		for (uint8_t j = 12; j < 16; j++) {
  800038c:	230c      	movs	r3, #12
  800038e:	71bb      	strb	r3, [r7, #6]
  8000390:	e014      	b.n	80003bc <gpio_led_effect_3+0x3c>
-		{
 			gpio_led_write(j, 1);
  8000392:	79bb      	ldrb	r3, [r7, #6]
  8000394:	2101      	movs	r1, #1
@@ -390,7 +395,7 @@ void gpio_led_effect_3()
  80003ae:	79fb      	ldrb	r3, [r7, #7]
  80003b0:	4618      	mov	r0, r3
  80003b2:	f000 f979 	bl	80006a8 <HAL_Delay>
-		for(uint8_t j = 12; j < 16; j++)
+		for (uint8_t j = 12; j < 16; j++) {
  80003b6:	79bb      	ldrb	r3, [r7, #6]
  80003b8:	3301      	adds	r3, #1
  80003ba:	71bb      	strb	r3, [r7, #6]
@@ -403,7 +408,7 @@ void gpio_led_effect_3()
  80003c2:	79fb      	ldrb	r3, [r7, #7]
  80003c4:	3b14      	subs	r3, #20
  80003c6:	71fb      	strb	r3, [r7, #7]
-	while (i > 0)
+	while (i > 0) {
  80003c8:	79fb      	ldrb	r3, [r7, #7]
  80003ca:	2b00      	cmp	r3, #0
  80003cc:	d1de      	bne.n	800038c <gpio_led_effect_3+0xc>
@@ -416,22 +421,24 @@ void gpio_led_effect_3()
  80003d6:	bd80      	pop	{r7, pc}
 
 080003d8 <gpio_led_effect_4>:
-
-void gpio_led_effect_4(uint8_t n)
-{
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+gpio_led_effect_4(uint8_t n) {
  80003d8:	b580      	push	{r7, lr}
  80003da:	b084      	sub	sp, #16
  80003dc:	af00      	add	r7, sp, #0
  80003de:	4603      	mov	r3, r0
  80003e0:	71fb      	strb	r3, [r7, #7]
-	  uint32_t *GPIOD_ODR = (uint32_t *)(0x40020c00 + 0x14);
+	  uint32_t volatile *const GPIOD_ODR = (uint32_t *)(0x40020c00 + 0x14);
  80003e2:	4b10      	ldr	r3, [pc, #64]	; (8000424 <gpio_led_effect_4+0x4c>)
  80003e4:	60bb      	str	r3, [r7, #8]
-	  for(uint8_t i = 0; i <= n; i++)
+	  for (uint8_t i = 0; i <= n; i++) {
  80003e6:	2300      	movs	r3, #0
  80003e8:	73fb      	strb	r3, [r7, #15]
  80003ea:	e011      	b.n	8000410 <gpio_led_effect_4+0x38>
-	  {
 		  *GPIOD_ODR |= (0b1111<<12);
  80003ec:	68bb      	ldr	r3, [r7, #8]
  80003ee:	681b      	ldr	r3, [r3, #0]
@@ -448,7 +455,7 @@ void gpio_led_effect_4(uint8_t n)
 		  HAL_Delay(50);
  8000404:	2032      	movs	r0, #50	; 0x32
  8000406:	f000 f94f 	bl	80006a8 <HAL_Delay>
-	  for(uint8_t i = 0; i <= n; i++)
+	  for (uint8_t i = 0; i <= n; i++) {
  800040a:	7bfb      	ldrb	r3, [r7, #15]
  800040c:	3301      	adds	r3, #1
  800040e:	73fb      	strb	r3, [r7, #15]
@@ -467,29 +474,28 @@ void gpio_led_effect_4(uint8_t n)
  8000424:	40020c14 	.word	0x40020c14
 
 08000428 <gpio_led_effect_6>:
-		  HAL_Delay(200);
-	  }
-}
-
-void gpio_led_effect_6()
-{
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void gpio_led_effect_6() {
  8000428:	b580      	push	{r7, lr}
  800042a:	b082      	sub	sp, #8
  800042c:	af00      	add	r7, sp, #0
-	uint32_t *GPIOD_ODR = (uint32_t *)(0x40020c00 + 0x14);
+	uint32_t volatile *const GPIOD_ODR = (uint32_t *)(0x40020c00 + 0x14);
  800042e:	4b1d      	ldr	r3, [pc, #116]	; (80004a4 <gpio_led_effect_6+0x7c>)
  8000430:	603b      	str	r3, [r7, #0]
 	uint8_t i = 200;
  8000432:	23c8      	movs	r3, #200	; 0xc8
  8000434:	71fb      	strb	r3, [r7, #7]
-	while (i > 0)
+
+	while (i > 0) {
  8000436:	e02d      	b.n	8000494 <gpio_led_effect_6+0x6c>
-	{
-		for(uint8_t j = 12; j < 16; j++)
+		for (uint8_t j = 12; j < 16; j++) {
  8000438:	230c      	movs	r3, #12
  800043a:	71bb      	strb	r3, [r7, #6]
  800043c:	e024      	b.n	8000488 <gpio_led_effect_6+0x60>
-		{
 			*GPIOD_ODR |= (0x5<<12);
  800043e:	683b      	ldr	r3, [r7, #0]
  8000440:	681b      	ldr	r3, [r3, #0]
@@ -526,7 +532,7 @@ void gpio_led_effect_6()
  800047a:	79fb      	ldrb	r3, [r7, #7]
  800047c:	4618      	mov	r0, r3
  800047e:	f000 f913 	bl	80006a8 <HAL_Delay>
-		for(uint8_t j = 12; j < 16; j++)
+		for (uint8_t j = 12; j < 16; j++) {
  8000482:	79bb      	ldrb	r3, [r7, #6]
  8000484:	3301      	adds	r3, #1
  8000486:	71bb      	strb	r3, [r7, #6]
@@ -539,7 +545,7 @@ void gpio_led_effect_6()
  800048e:	79fb      	ldrb	r3, [r7, #7]
  8000490:	3b14      	subs	r3, #20
  8000492:	71fb      	strb	r3, [r7, #7]
-	while (i > 0)
+	while (i > 0) {
  8000494:	79fb      	ldrb	r3, [r7, #7]
  8000496:	2b00      	cmp	r3, #0
  8000498:	d1ce      	bne.n	8000438 <gpio_led_effect_6+0x10>

@@ -135,12 +135,12 @@ int main(void)
  8000228:	20000029 	.word	0x20000029
 
 0800022c <gpio_led_init>:
- * @brief	: initialize D.12, D.13, D.14, D.15 as leds on-board
- * @param	: None
- * @retval	: None
+ *\param[in]
+ *\param[out]
+ *\retval
  */
-void gpio_led_init()
-{
+void
+gpio_led_init() {
  800022c:	b480      	push	{r7}
  800022e:	b083      	sub	sp, #12
  8000230:	af00      	add	r7, sp, #0
@@ -186,12 +186,12 @@ void gpio_led_init()
  800027c:	40020c00 	.word	0x40020c00
 
 08000280 <gpio_led_write>:
- * 		@arg 1 : SET
- * 		@arg 0 : RESET
- * @retval	: None
+ *\param[in]
+ *\param[out]
+ *\retval
  */
-void gpio_led_write(uint8_t LED_x, uint8_t state)
-{
+void
+gpio_led_write(uint8_t LED_x, uint8_t state) {
  8000280:	b480      	push	{r7}
  8000282:	b085      	sub	sp, #20
  8000284:	af00      	add	r7, sp, #0
@@ -203,7 +203,7 @@ void gpio_led_write(uint8_t LED_x, uint8_t state)
   uint32_t *GPIOD_ODR = (uint32_t *)(0x40020c00 + 0x14);
  8000290:	4b0f      	ldr	r3, [pc, #60]	; (80002d0 <gpio_led_write+0x50>)
  8000292:	60fb      	str	r3, [r7, #12]
-  if (state == 1)
+  if (state == 1) {
  8000294:	79bb      	ldrb	r3, [r7, #6]
  8000296:	2b01      	cmp	r3, #1
  8000298:	d109      	bne.n	80002ae <gpio_led_write+0x2e>
@@ -216,8 +216,10 @@ void gpio_led_write(uint8_t LED_x, uint8_t state)
  80002a6:	431a      	orrs	r2, r3
  80002a8:	68fb      	ldr	r3, [r7, #12]
  80002aa:	601a      	str	r2, [r3, #0]
-  else
+  }
+  else {
 	  *GPIOD_ODR &= ~(1 << LED_x);
+  }
 }
  80002ac:	e009      	b.n	80002c2 <gpio_led_write+0x42>
 	  *GPIOD_ODR &= ~(1 << LED_x);
@@ -240,12 +242,12 @@ void gpio_led_write(uint8_t LED_x, uint8_t state)
  80002d0:	40020c14 	.word	0x40020c14
 
 080002d4 <exti0_init>:
- * @brief	: initialize external interrupt EXTI0
- * @param	: None
- * @retval	: None
+ *\param[in]
+ *\param[out]
+ *\retval
  */
-void exti0_init()
-{
+void
+exti0_init() {
  80002d4:	b480      	push	{r7}
  80002d6:	b085      	sub	sp, #20
  80002d8:	af00      	add	r7, sp, #0
@@ -291,12 +293,12 @@ void exti0_init()
  8000320:	e000e100 	.word	0xe000e100
 
 08000324 <EXTI0_IRQHandler>:
- * @brief	: handle vector interrupt EXTI0
- * @param	: None
- * @retval	: None
+ *\param[in]
+ *\param[out]
+ *\retval
  */
-void EXTI0_IRQHandler()
-{
+void
+EXTI0_IRQHandler() {
  8000324:	b480      	push	{r7}
  8000326:	b083      	sub	sp, #12
  8000328:	af00      	add	r7, sp, #0
@@ -337,12 +339,12 @@ void EXTI0_IRQHandler()
  8000368:	40013c14 	.word	0x40013c14
 
 0800036c <exti1_init>:
- * @brief	: initialize external interrupt EXTI1 on A.1 pin
- * @param	: None
- * @retval	: None
+ *\param[in]
+ *\param[out]
+ *\retval
  */
-void exti1_init()
-{
+void
+exti1_init() {
  800036c:	b480      	push	{r7}
  800036e:	b085      	sub	sp, #20
  8000370:	af00      	add	r7, sp, #0
@@ -388,9 +390,12 @@ void exti1_init()
  80003b8:	e000e100 	.word	0xe000e100
 
 080003bc <EXTI1_IRQHandler>:
-
-void EXTI1_IRQHandler()
-{
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+EXTI1_IRQHandler() {
  80003bc:	b480      	push	{r7}
  80003be:	b083      	sub	sp, #12
  80003c0:	af00      	add	r7, sp, #0

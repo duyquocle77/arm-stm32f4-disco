@@ -14,12 +14,9 @@ typedef enum
 } eLED_STATE;
 
 void custom_delay(uint32_t time);
-
 void gpio_led_init();
 void gpio_led_write(uint8_t LED_x, eLED_STATE state);
-
 void vectortable_move();
-
 void tim1_init();
 void tim1_handler();
 void tim1_delay_ms(uint32_t time_milisec);
@@ -27,17 +24,15 @@ void tim1_delay_ms(uint32_t time_milisec);
 uint8_t flag = 0;	/*this flag is status of button*/
 uint16_t cnt = 0;	/*this flag is to debug*/
 
-int main(void)
-{
+int
+main() {
 	HAL_Init();
 
 	gpio_led_init();
 	vectortable_move();
 	tim1_init();
 
-	while (1)
-	{
-
+	while (1) {
 			gpio_led_write(LED_6, ON);
 			tim1_delay_ms(100);
 			gpio_led_write(LED_6, OFF);
@@ -48,61 +43,59 @@ int main(void)
 }
 
 /*
- * @brief	: creat delay time
- * @param	: time
- * 		@arg time can be in range (0...2^32)
- *
- * @retval	: None
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
  */
-void custom_delay(uint32_t time)
-{
-	for(uint32_t i = 0; i < time; i++)
-	{
+void
+custom_delay(uint32_t time) {
+	for (uint32_t i = 0; i < time; i++) {
 		__asm("NOP");
 	}
 }
 
 /*
- * @brief	: initialize D.12, D.13, D.14, D.15 as leds on-board
- * @param	: None
- * @retval	: None
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
  */
-void gpio_led_init()
-{
-  /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOD_CLK_ENABLE();
+void
+gpio_led_init() {
+	/* GPIO Ports Clock Enable */
+	__HAL_RCC_GPIOD_CLK_ENABLE();
 
-  /*Configure GPIO pin Output Level */
-  uint32_t *GPIOD_MODER = (uint32_t *)(0x40020c00 + 0x00);
-  *GPIOD_MODER &= ~(0b11111111<<24);
-  *GPIOD_MODER |= (0b01010101<<24);
+	/*Configure GPIO pin Output Level */
+	uint32_t *GPIOD_MODER = (uint32_t *)(0x40020c00 + 0x00);
+	*GPIOD_MODER &= ~(0b11111111<<24);
+	*GPIOD_MODER |= (0b01010101<<24);
 }
 
 /*
- * @brief	: set or reset led
- * @param	: LED_x
- * 		x can be (x: 3...6)
- * @param	: state
- * 		@arg 1 : SET
- * 		@arg 0 : RESET
- * @retval	: None
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
  */
-void gpio_led_write(uint8_t LED_x, eLED_STATE state)
-{
-  uint32_t *GPIOD_ODR = (uint32_t *)(0x40020c00 + 0x14);
-  if (state == ON)
+void gpio_led_write(uint8_t LED_x, eLED_STATE state) {
+	uint32_t *GPIOD_ODR = (uint32_t *)(0x40020c00 + 0x14);
+	if (state == ON) {
 	  *GPIOD_ODR |= (1 << LED_x);
-  else
+	}
+	else {
 	  *GPIOD_ODR &= ~(1 << LED_x);
+	}
 }
 
 /*
- * @brief	: move vector table from FLASH to RAM
- * @param	: None
- * @retval	: None
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
  */
-void vectortable_move()
-{
+void
+vectortable_move() {
 	/*
 	 * size(vector_table) = 0x194 + 0x4 - 0x00 = 0x198
 	 * */
@@ -116,8 +109,14 @@ void vectortable_move()
 	*VTOR = 0x20000000;
 }
 
-void tim1_init()
-{
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+tim1_init() {
 	__HAL_RCC_TIM1_CLK_ENABLE();
 
 	/*
@@ -153,15 +152,27 @@ void tim1_init()
 	*((uint32_t *)(0x20000000 + 0xa4)) = ((uint32_t)tim1_handler | 1);
 }
 
-void TIM1_UP_TIM10_IRQHandler()
-{
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+TIM1_UP_TIM10_IRQHandler() {
 	/* clear interrupt flag */
 	uint32_t *SR = (uint32_t *)(0x40010000 + 0x10);
 	*SR &= ~(1<<0);
 }
 
-void tim1_handler()
-{
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+tim1_handler() {
 
 	flag = 1 - flag;
 	cnt++;
@@ -171,8 +182,14 @@ void tim1_handler()
 	*SR &= ~(1<<0);
 }
 
-void tim1_delay_ms(uint32_t time_milisec)
-{
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+tim1_delay_ms(uint32_t time_milisec) {
 	cnt = 0;
 	while(cnt < time_milisec);
 }

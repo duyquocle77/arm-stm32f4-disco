@@ -81,8 +81,8 @@ Disassembly of section .text:
 uint8_t flag = 0;	/*this flag is status of button*/
 uint16_t cnt = 0;	/*this flag is to debug*/
 
-int main(void)
-{
+int
+main(void) {
  80001d8:	b580      	push	{r7, lr}
  80001da:	af00      	add	r7, sp, #0
 	HAL_Init();
@@ -95,9 +95,7 @@ int main(void)
 	tim_systick_init();
  80001e8:	f000 f882 	bl	80002f0 <tim_systick_init>
 
-	while (1)
-	{
-
+	while (1) {
 			gpio_led_write(LED_6, ON);
  80001ec:	2101      	movs	r1, #1
  80001ee:	200f      	movs	r0, #15
@@ -117,12 +115,12 @@ int main(void)
 	...
 
 08000210 <gpio_led_init>:
- * @brief	: initialize D.12, D.13, D.14, D.15 as leds on-board
- * @param	: None
- * @retval	: None
+ *\param[in]
+ *\param[out]
+ *\retval
  */
-void gpio_led_init()
-{
+void
+gpio_led_init() {
  8000210:	b480      	push	{r7}
  8000212:	b083      	sub	sp, #12
  8000214:	af00      	add	r7, sp, #0
@@ -168,12 +166,12 @@ void gpio_led_init()
  8000260:	40020c00 	.word	0x40020c00
 
 08000264 <gpio_led_write>:
- * 		@arg 1 : SET
- * 		@arg 0 : RESET
- * @retval	: None
+ *\param[in]
+ *\param[out]
+ *\retval
  */
-void gpio_led_write(uint8_t LED_x, eLED_STATE state)
-{
+void
+gpio_led_write(uint8_t LED_x, eLED_STATE state) {
  8000264:	b480      	push	{r7}
  8000266:	b085      	sub	sp, #20
  8000268:	af00      	add	r7, sp, #0
@@ -185,7 +183,7 @@ void gpio_led_write(uint8_t LED_x, eLED_STATE state)
   uint32_t *GPIOD_ODR = (uint32_t *)(0x40020c00 + 0x14);
  8000274:	4b0f      	ldr	r3, [pc, #60]	; (80002b4 <gpio_led_write+0x50>)
  8000276:	60fb      	str	r3, [r7, #12]
-  if (state == ON)
+  if (state == ON) {
  8000278:	79bb      	ldrb	r3, [r7, #6]
  800027a:	2b01      	cmp	r3, #1
  800027c:	d109      	bne.n	8000292 <gpio_led_write+0x2e>
@@ -198,8 +196,10 @@ void gpio_led_write(uint8_t LED_x, eLED_STATE state)
  800028a:	431a      	orrs	r2, r3
  800028c:	68fb      	ldr	r3, [r7, #12]
  800028e:	601a      	str	r2, [r3, #0]
-  else
+  }
+  else {
 	  *GPIOD_ODR &= ~(1 << LED_x);
+  }
 }
  8000290:	e009      	b.n	80002a6 <gpio_led_write+0x42>
 	  *GPIOD_ODR &= ~(1 << LED_x);
@@ -222,12 +222,12 @@ void gpio_led_write(uint8_t LED_x, eLED_STATE state)
  80002b4:	40020c14 	.word	0x40020c14
 
 080002b8 <vectortable_move>:
- * @brief	: move vector table from FLASH to RAM
- * @param	: None
- * @retval	: None
+ *\param[in]
+ *\param[out]
+ *\retval
  */
-void vectortable_move()
-{
+void
+vectortable_move() {
  80002b8:	b580      	push	{r7, lr}
  80002ba:	b084      	sub	sp, #16
  80002bc:	af00      	add	r7, sp, #0
@@ -264,9 +264,12 @@ void vectortable_move()
  80002ec:	e000ed08 	.word	0xe000ed08
 
 080002f0 <tim_systick_init>:
-
-void tim_systick_init()
-{
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+tim_systick_init() {
  80002f0:	b480      	push	{r7}
  80002f2:	b083      	sub	sp, #12
  80002f4:	af00      	add	r7, sp, #0
@@ -323,8 +326,11 @@ void tim_systick_init()
  800034c:	2000003c 	.word	0x2000003c
 
 08000350 <systick_handler>:
-
-void systick_handler()
+ *\param[out]
+ *\retval
+ */
+void
+systick_handler()
 {
  8000350:	b480      	push	{r7}
  8000352:	af00      	add	r7, sp, #0
@@ -344,8 +350,11 @@ void systick_handler()
  800036c:	20000028 	.word	0x20000028
 
 08000370 <delay_ms>:
-
-void delay_ms(uint32_t time_milisec)
+ *\param[out]
+ *\retval
+ */
+void
+delay_ms(uint32_t time_milisec)
 {
  8000370:	b480      	push	{r7}
  8000372:	b083      	sub	sp, #12
@@ -355,7 +364,7 @@ void delay_ms(uint32_t time_milisec)
  8000378:	4b08      	ldr	r3, [pc, #32]	; (800039c <delay_ms+0x2c>)
  800037a:	2200      	movs	r2, #0
  800037c:	801a      	strh	r2, [r3, #0]
-	while(cnt < time_milisec);
+	while (cnt < time_milisec) {}
  800037e:	bf00      	nop
  8000380:	4b06      	ldr	r3, [pc, #24]	; (800039c <delay_ms+0x2c>)
  8000382:	881b      	ldrh	r3, [r3, #0]

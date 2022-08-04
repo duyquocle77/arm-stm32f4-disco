@@ -30,12 +30,13 @@ int main(void)
 }
 
 /*
- * @brief	: initialize D.12, D.13, D.14, D.15 as leds on-board
- * @param	: None
- * @retval	: None
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
  */
-void gpio_led_init()
-{
+void
+gpio_led_init() {
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
@@ -51,31 +52,34 @@ void gpio_led_init()
 #define LED_6 15
 
 /*
- * @brief	: ON or OFF led
- * @param	: LED_x
- * 		x can be (x: 3...6)
- * @param	: state
- * 		@arg 1 : ON
- * 		@arg 0 : OFF
- * @retval	: None
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
  */
-void gpio_led_write(uint8_t LED_x, uint8_t state)
-{
+void
+gpio_led_write(uint8_t LED_x, uint8_t state) {
 	uint32_t volatile *const GPIOD_ODR = (uint32_t *)(0x40020c00 + 0x14);
-  if (state == 1)
+  if (state == 1) {
 	  *GPIOD_ODR |= (1 << LED_x);
-  else
+  }
+  else {
 	  *GPIOD_ODR &= ~(1 << LED_x);
+  }
 }
 
-void gpio_led_effect_1(uint8_t n)
-{
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+gpio_led_effect_1(uint8_t n) {
 	uint32_t volatile *const GPIOD_ODR = (uint32_t *)(0x40020c00 + 0x14);
   uint8_t i, j;
-  for(i = 0; i < n; i++)
-  {
-	  for(j = 12; j < 16; j++)
-	  {
+  for (i = 0; i < n; i++) {
+	  for (j = 12; j < 16; j++) {
 		  *GPIOD_ODR |= (1 << j);
 		  HAL_Delay(200);
 	  }
@@ -84,14 +88,18 @@ void gpio_led_effect_1(uint8_t n)
   }
 }
 
-void gpio_led_effect_2(uint8_t n)
-{
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+gpio_led_effect_2(uint8_t n) {
 	uint32_t volatile *const GPIOD_ODR = (uint32_t *)(0x40020c00 + 0x14);
 	  uint8_t i, j;
-	  for(i = 0; i < n; i++)
-	  {
-		  for(j = 15; j > 11; j--)
-		  {
+	  for (i = 0; i < n; i++) {
+		  for (j = 15; j > 11; j--) {
 			  *GPIOD_ODR |= (1 << j);
 			  HAL_Delay(200);
 		  }
@@ -100,13 +108,18 @@ void gpio_led_effect_2(uint8_t n)
 	  }
 }
 
-void gpio_led_effect_3()
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+gpio_led_effect_3()
 {
 	uint8_t i = 200;
-	while (i > 0)
-	{
-		for(uint8_t j = 12; j < 16; j++)
-		{
+	while (i > 0) {
+		for (uint8_t j = 12; j < 16; j++) {
 			gpio_led_write(j, 1);
 			HAL_Delay(i);
 			gpio_led_write(j, 0);
@@ -117,11 +130,16 @@ void gpio_led_effect_3()
 	}
 }
 
-void gpio_led_effect_4(uint8_t n)
-{
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+gpio_led_effect_4(uint8_t n) {
 	  uint32_t volatile *const GPIOD_ODR = (uint32_t *)(0x40020c00 + 0x14);
-	  for(uint8_t i = 0; i <= n; i++)
-	  {
+	  for (uint8_t i = 0; i <= n; i++) {
 		  *GPIOD_ODR |= (0b1111<<12);
 		  HAL_Delay(50);
 		  *GPIOD_ODR = 0x00;
@@ -129,11 +147,16 @@ void gpio_led_effect_4(uint8_t n)
 	  }
 }
 
-void gpio_led_effect_5()
-{
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+gpio_led_effect_5() {
 	  uint32_t volatile *const GPIOD_ODR = (uint32_t *)(0x40020c00 + 0x14);
-	  for(uint8_t i = 8; i < 13; i++)
-	  {
+	  for (uint8_t i = 8; i < 13; i++) {
 		  *GPIOD_ODR |= (0b1111<<i);
 		  HAL_Delay(200);
 	  }
@@ -145,14 +168,18 @@ void gpio_led_effect_5()
 	  }
 }
 
-void gpio_led_effect_6()
-{
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void gpio_led_effect_6() {
 	uint32_t volatile *const GPIOD_ODR = (uint32_t *)(0x40020c00 + 0x14);
 	uint8_t i = 200;
-	while (i > 0)
-	{
-		for(uint8_t j = 12; j < 16; j++)
-		{
+
+	while (i > 0) {
+		for (uint8_t j = 12; j < 16; j++) {
 			*GPIOD_ODR |= (0x5<<12);
 			HAL_Delay(i);
 			*GPIOD_ODR = 0x00;

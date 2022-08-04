@@ -1,4 +1,6 @@
-../Core/Src/main.c:63:5:main	8	static
-../Core/Src/main.c:106:6:SystemClock_Config	88	static
-../Core/Src/main.c:148:13:MX_GPIO_Init	16	static
-../Core/Src/main.c:164:6:Error_Handler	4	static,ignoring_inline_asm
+../Core/Src/main.c:18:1:main	8	static
+../Core/Src/main.c:42:1:custom_delay	24	static,ignoring_inline_asm
+../Core/Src/main.c:55:1:gpio_led_init	16	static
+../Core/Src/main.c:72:1:gpio_led_write	24	static
+../Core/Src/main.c:89:1:exti0_init	24	static
+../Core/Src/main.c:108:1:EXTI0_IRQHandler	16	static

@@ -7,10 +7,8 @@
 #define LED_6 15
 
 void custom_delay(uint32_t time);
-
 void gpio_led_init();
 void gpio_led_write(uint8_t LED_x, uint8_t value);
-
 void exti0_init();
 void exti1_init();
 
@@ -44,28 +42,27 @@ int main(void)
 }
 
 /*
- * @brief	: creat delay time
- * @param	: time
- * 		@arg time can be in range (0...2^32)
- *
- * @retval	: None
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
  */
-void custom_delay(uint32_t time)
-{
-	for(uint32_t i = 0; i < time; i++)
-	{
+void
+custom_delay(uint32_t time) {
+	for(uint32_t i = 0; i < time; i++) {
 		__asm("NOP");
 	}
 }
 
 
 /*
- * @brief	: initialize D.12, D.13, D.14, D.15 as leds on-board
- * @param	: None
- * @retval	: None
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
  */
-void gpio_led_init()
-{
+void
+gpio_led_init() {
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
@@ -76,25 +73,30 @@ void gpio_led_init()
 }
 
 /*
- * @brief	: set or reset led
- * @param	: LED_x
- * 		x can be (x: 3...6)
- * @param	: state
- * 		@arg 1 : SET
- * 		@arg 0 : RESET
- * @retval	: None
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
  */
-void gpio_led_write(uint8_t LED_x, uint8_t state)
-{
+void
+gpio_led_write(uint8_t LED_x, uint8_t state) {
   uint32_t *GPIOD_ODR = (uint32_t *)(0x40020c00 + 0x14);
-  if (state == 1)
+  if (state == 1) {
 	  *GPIOD_ODR |= (1 << LED_x);
-  else
+  }
+  else {
 	  *GPIOD_ODR &= ~(1 << LED_x);
+  }
 }
 
-void gpio_button_init()
-{
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+gpio_button_init() {
 	/* GPIO Ports Clock Enable */
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 
@@ -107,28 +109,30 @@ void gpio_button_init()
 }
 
 /*
- * @brief read button state
- * @param None
- * @retval uint8_t:
- * 		@arg 1 button in active
- * 		@arg 2 button in in-active
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
  */
-uint8_t gpio_button_read()
-{
+uint8_t
+gpio_button_read() {
 	uint32_t *GPIOA_IDR = (uint32_t *)(0x40020010);
-	if(((*GPIOA_IDR >> 1) & 1) == 1)
+	if(((*GPIOA_IDR >> 1) & 1) == 1) {
 		return 1;
-	else
+	}
+	else {
 		return 0;
+	}
 }
 
 /*
- * @brief	: initialize external interrupt EXTI0
- * @param	: None
- * @retval	: None
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
  */
-void exti0_init()
-{
+void
+exti0_init() {
 	/*Configure External Interrupt pin   */
 	uint32_t *EXTI_IMR = (uint32_t *)(0x40013c00 + 0x00); //enable mask interrupt
 	*EXTI_IMR |= (1<<0);
@@ -141,12 +145,13 @@ void exti0_init()
 }
 
 /*
- * @brief	: handle vector interrupt EXTI0
- * @param	: None
- * @retval	: None
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
  */
-void EXTI0_IRQHandler()
-{
+void
+EXTI0_IRQHandler() {
 	//custom_delay(500000);
 	flag_1 = 1 - flag_1;
 	cnt_1++;
@@ -157,12 +162,13 @@ void EXTI0_IRQHandler()
 }
 
 /*
- * @brief	: initialize external interrupt EXTI1 on A.1 pin
- * @param	: None
- * @retval	: None
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
  */
-void exti1_init()
-{
+void
+exti1_init() {
 	/*Configure External Interrupt pin   */
 	uint32_t *EXTI_IMR = (uint32_t *)(0x40013c00 + 0x00); //enable mask interrupt on line 1
 	*EXTI_IMR |= (1<<1);
@@ -174,8 +180,14 @@ void exti1_init()
 	*NVIC_ISER0 |= (1<<7);
 }
 
-void EXTI1_IRQHandler()
-{
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+EXTI1_IRQHandler() {
 	//custom_delay(500000);
 	flag_2 = 1 - flag_2;
 	cnt_2++;

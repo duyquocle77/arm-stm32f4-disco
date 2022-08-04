@@ -2605,14 +2605,14 @@ LOAD d:/program file user/stm32cubeide/stm32cubeide_1.9.0/stm32cubeide/plugins/c
  .debug_info    0x0000000000000ef6      0x90d ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
  .debug_info    0x0000000000001803      0xd8b ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.o
 
-.debug_abbrev   0x0000000000000000      0x994
- .debug_abbrev  0x0000000000000000      0x1d0 ./Core/Src/main.o
- .debug_abbrev  0x00000000000001d0       0xd4 ./Core/Src/stm32f4xx_hal_msp.o
- .debug_abbrev  0x00000000000002a4       0x74 ./Core/Src/stm32f4xx_it.o
- .debug_abbrev  0x0000000000000318      0x116 ./Core/Src/system_stm32f4xx.o
- .debug_abbrev  0x000000000000042e       0x12 ./Core/Startup/startup_stm32f411vetx.o
- .debug_abbrev  0x0000000000000440      0x23e ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
- .debug_abbrev  0x000000000000067e      0x316 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.o
+.debug_abbrev   0x0000000000000000      0x992
+ .debug_abbrev  0x0000000000000000      0x1ce ./Core/Src/main.o
+ .debug_abbrev  0x00000000000001ce       0xd4 ./Core/Src/stm32f4xx_hal_msp.o
+ .debug_abbrev  0x00000000000002a2       0x74 ./Core/Src/stm32f4xx_it.o
+ .debug_abbrev  0x0000000000000316      0x116 ./Core/Src/system_stm32f4xx.o
+ .debug_abbrev  0x000000000000042c       0x12 ./Core/Startup/startup_stm32f411vetx.o
+ .debug_abbrev  0x000000000000043e      0x23e ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
+ .debug_abbrev  0x000000000000067c      0x316 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.o
 
 .debug_aranges  0x0000000000000000      0x338
  .debug_aranges

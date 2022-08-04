@@ -20,21 +20,20 @@ uint8_t rx_dma_buffer[10];
 uint8_t rx_int_buffer[128];
 uint8_t rx_index;
 
-int main(void)
-{
+int main(void) {
 	vectortable_move();
 
 	uart_init();
 	dma_init();
 	interrupt_init();
 
-	while (1)
-	{
+	while (1) {
 		//uart_send_char('x');
 		//uart_send_string("Hello master \r\n");
 
 		//data = uart_receive_char();
 		//uart_receive_string();
+
 		//sys_delay_ms(500);
 	}
 
@@ -46,8 +45,8 @@ int main(void)
  * @param	: None
  * @retval	: None
  */
-void vectortable_move()
-{
+void
+vectortable_move() {
 	/* size(vector_table) = 0x194 + 0x4 - 0x00 = 0x198 */
 	/* move vector table from flash to ram */
 	void *volatile ram   = (void *)0x20000000;
@@ -58,8 +57,14 @@ void vectortable_move()
 	*VTOR = 0x20000000;
 }
 
-void interrupt_init()
-{
+/*
+ * \brief
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
+void
+interrupt_init() {
 	/*-----------------------UART Receive complete Interrupt-----------------------*/
 	uint32_t volatile *const USART2_CR1 = (uint32_t *)(0x40004400 + 0x0c);
 	uint32_t volatile *const NVIC_ISER1 = (uint32_t *)(0xe000e100 + 0x04);
@@ -84,8 +89,14 @@ void interrupt_init()
 	*DMA1_S7CR |= (1 << 4);		// bit TCIE
 }
 
-void dma_init()
-{
+/*
+ * \brief
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
+void
+dma_init() {
 	__HAL_RCC_DMA1_CLK_ENABLE();
 
 	/*-----------------------Rx DMA-----------------------*/
@@ -102,7 +113,7 @@ void dma_init()
 	/*number of data*/
 	*DMA1_S7NDTR = sizeof(rx_dma_buffer);
 	/*peripheral address*/
-	*DMA1_S7PAR = (0x40004400 + 0x04);
+	*DMA1_S7PAR = (uint32_t)USART2_DR;
 	/*memory address*/
 	*DMA1_S7M0AR = (uint32_t)rx_dma_buffer;
 	/*circular mode*/
@@ -113,8 +124,14 @@ void dma_init()
 	*DMA1_S7CR |= (1 << 0);
 }
 
-void sys_delay_ms(uint32_t time_milisec)
-{
+/*
+ * \brief
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
+void
+sys_delay_ms(uint32_t time_milisec) {
 	uint32_t volatile *const SYS_CSR = (uint32_t *)(0xe000e010 + 0x00);
 	uint32_t volatile *const SYS_RVR = (uint32_t *)(0xe000e010 + 0x04);
 
@@ -128,15 +145,21 @@ void sys_delay_ms(uint32_t time_milisec)
 	*SYS_RVR = 16000;
 	// F = 16 Mhz ->     1 count = 16 us
 	/*delay*/
-	for(uint32_t i = 0; i <= time_milisec; i++)
-		while(((*SYS_CSR >> 16) & 1) == 0);		// check COUNTFLAG, every 1 ms -> COUNTFLAG = 1
-
+	for (uint32_t i = 0; i <= time_milisec; i++) {
+		while (((*SYS_CSR >> 16) & 1) == 0) {}		// check COUNTFLAG, every 1 ms -> COUNTFLAG = 1
+	}
 	/*disable the counter*/
 	*SYS_CSR &= ~(1 << 0);
 }
 
-void uart_init()
-{
+/*
+ * \brief
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
+void
+uart_init() {
 	/*enable clock peripherals*/
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 	__HAL_RCC_USART2_CLK_ENABLE();
@@ -175,40 +198,59 @@ void uart_init()
 	*USART2_CR1 |= (1 << 13);	// bit UE
 }
 
-void uart_send_char(uint8_t charac)
-{
+/*
+ * \brief
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
+void
+uart_send_char(uint8_t charac) {
 	uint32_t volatile *const UART2_SR = (uint32_t *)(0x40004400 + 0x00);
 	uint8_t  volatile *const UART2_DR = (uint8_t *)(0x40004400 + 0x04);
 
 	/*wait data empty*/
-	while(((*UART2_SR >> 7) & 1) == 0);
+	while (((*UART2_SR >> 7) & 1) == 0) {}
 
 	/*transmiss data*/
 	*UART2_DR = charac;
 
 	/*wait transmission complete*/
-	while(((*UART2_SR >> 6) & 1) == 0);
+	while(((*UART2_SR >> 6) & 1) == 0) {}
 
 	/*clear TC bit*/
 	*UART2_SR &= ~(1 << 6);
 }
 
-void uart_send_string(char *string)
+/*
+ * \brief
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
+void
+uart_send_string(char *string)
 {
-	while(*string != '\0')
-	{
+	while (*string != '\0') {
 		uart_send_char(*string);
 		string++;
 	}
 }
 
-uint8_t uart_receive_char()
+/*
+ * \brief
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
+uint8_t
+uart_receive_char()
 {
 	uint32_t volatile *const UART2_SR = (uint32_t *)(0x40004400 + 0x00);
 	uint8_t  volatile *const UART2_DR = (uint8_t *)(0x40004400 + 0x04);
 
 	/*wait data not empty*/
-	while(((*UART2_SR >> 5) & 1) == 0);
+	while (((*UART2_SR >> 5) & 1) == 0) {}
 
 	/*clear RXNE*/
 	*UART2_SR &= ~(1 << 5);
@@ -216,25 +258,41 @@ uint8_t uart_receive_char()
 	return *UART2_DR;
 }
 
-void uart_receive_string()
+/*
+ * \brief
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
+void
+uart_receive_string()
 {
 	uint32_t volatile *const UART2_SR = (uint32_t *)(0x40004400 + 0x00);
 	uint8_t  volatile *const UART2_DR = (uint8_t *)(0x40004400 + 0x04);
 
 	/*wait data not empty*/
-	while(((*UART2_SR >> 5) & 1) == 0);
+	while (((*UART2_SR >> 5) & 1) == 0) {}
 
 	/*receive data*/
 	rx_int_buffer[rx_index] = *UART2_DR;
 	rx_index++;
 
-	if (rx_index >= 50) rx_index = 0;
+	if (rx_index >= 50) {
+		rx_index = 0;
+	}
 
 	/*clear RXNE*/
 	*UART2_SR &= ~(1 << 5);
 }
 
-void uart_receive_handler()
+/*
+ * \brief
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
+void
+uart_receive_handler()
 {
 	uint32_t volatile *const USART2_SR = (uint32_t *)(0x40004400 + 0x00);
 	uint32_t volatile *const UART2_DR  = (uint32_t *)(0x40004400 + 0x04);
@@ -243,12 +301,20 @@ void uart_receive_handler()
 	rx_int_buffer[rx_index] = *UART2_DR;
 	rx_index++;
 
-	if (rx_index >= 50) rx_index = 0;
+	if (rx_index >= 50) {
+		rx_index = 0;
+	}
 
 	/*clear RXNE*/
 	*USART2_SR &= ~(1 << 5);
 }
 
+/*
+ * \brief
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
 void
 dma_transfer_handler() {
 	uint32_t volatile *const DMA1_HIFCR    = (uint32_t *)(0x40026000 + 0x0C);
