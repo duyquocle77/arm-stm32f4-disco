@@ -168,6 +168,7 @@ uart_init() {
 	uint32_t volatile *const GPIOA_AFRL  = (uint32_t *)(0x40020000 + 0x20);
 	uint16_t volatile *const USART2_BRR = (uint16_t *)(0x40004400 + 0x08);
 	uint32_t volatile *const USART2_CR1 = (uint32_t *)(0x40004400 + 0x0c);
+	uint32_t volatile *const USART2_CR2 = (uint32_t *)(0x40004400 + 0x10);
 
 	/*set PA2 as TX, PA3 as RX*/
 	/*alternate mode*/
@@ -178,6 +179,15 @@ uart_init() {
 	*GPIOA_AFRL &= ~((0b1111 << (4 * 3)) | (0b1111 << (4 * 2)));
 	*GPIOA_AFRL |=   (0b0111 << (4 * 3)) | (0b0111 << (4 * 2));
 
+	/*set data frame*/
+	/*word length: 8 data bits*/
+	*USART2_CR1 &= ~(1 << 12);	// bit M
+	/* 1 stop bit*/
+	*USART2_CR2 &= (1 << 13);
+	*USART2_CR2 &= (1 << 12);
+	/*disable parity bit*/
+	*USART2_CR1 &= ~(1 << 10);	// bit PCE
+
 	/*set baudrate*/
 	//fuart = 16mhz, baud = 9600 -> USART2_BRR = 104.1875
 	/*uint16_t DIV_Mantissa = 16000000 / (16 * baudrate);
@@ -185,11 +195,6 @@ uart_init() {
 	*USART2_BRR = (DIV_Mantissa << 4) | DIV_Fraction;*/
 	*USART2_BRR = (104 << 4) | 3;
 
-	/*set data frame*/
-	/*8-bits*/
-	*USART2_CR1 &= ~(1 << 12);	// bit M
-	/*disable parity*/
-	*USART2_CR1 &= ~(1 << 10);	// bit PCE
 
 	/*enable Tx, Rx*/
 	*USART2_CR1 |= (1 << 2) | (1 << 3);	// bit TE, RE

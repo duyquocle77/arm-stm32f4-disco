@@ -1,0 +1,15 @@
+../Core/Src/main.c:32:1:main	8	static
+../Core/Src/main.c:66:1:vectortable_move	24	static
+../Core/Src/main.c:85:1:tim_systick_init	16	static
+../Core/Src/main.c:107:1:sys_delay_ms	24	static
+../Core/Src/main.c:123:1:interrupt_init	24	static
+../Core/Src/main.c:155:1:dma_init	40	static
+../Core/Src/main.c:190:1:spi_init	48	static
+../Core/Src/main.c:246:1:spi_ss_enable	16	static
+../Core/Src/main.c:258:1:spi_ss_disable	16	static
+../Core/Src/main.c:270:1:spi_read_command	16	static
+../Core/Src/main.c:285:1:spi_write_command	16	static
+../Core/Src/main.c:297:1:spi_send_data	32	static
+../Core/Src/main.c:321:1:spi_receive_data	24	static
+../Core/Src/main.c:345:1:spi_receive_handler	16	static
+../Core/Src/main.c:369:1:dma_transfer_handler	16	static,ignoring_inline_asm
