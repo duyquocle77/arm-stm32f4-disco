@@ -1,0 +1,7 @@
+../Core/Src/main.c:33:1:main	16	static
+../Core/Src/main.c:70:1:vectortable_move	24	static
+../Core/Src/main.c:89:1:tim_systick_init	16	static
+../Core/Src/main.c:111:1:sys_delay_ms	24	static
+../Core/Src/main.c:128:1:i2c_init	48	static
+../Core/Src/main.c:171:1:i2c_read_data	40	static
+../Core/Src/main.c:230:1:i2c_write_data	32	static

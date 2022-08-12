@@ -3,10 +3,10 @@
 ../Core/Src/main.c:67:1:interrupt_init	24	static
 ../Core/Src/main.c:99:1:dma_init	40	static
 ../Core/Src/main.c:134:1:sys_delay_ms	32	static
-../Core/Src/main.c:162:1:uart_init	32	static
-../Core/Src/main.c:208:1:uart_send_char	24	static
-../Core/Src/main.c:232:1:uart_send_string	16	static
-../Core/Src/main.c:247:1:uart_receive_char	16	static
-../Core/Src/main.c:268:1:uart_receive_string	16	static
-../Core/Src/main.c:295:1:uart_receive_handler	16	static
-../Core/Src/main.c:319:1:dma_transfer_handler	16	static,ignoring_inline_asm
+../Core/Src/main.c:162:1:uart_init	40	static
+../Core/Src/main.c:213:1:uart_send_char	24	static
+../Core/Src/main.c:237:1:uart_send_string	16	static
+../Core/Src/main.c:252:1:uart_receive_char	16	static
+../Core/Src/main.c:273:1:uart_receive_string	16	static
+../Core/Src/main.c:300:1:uart_receive_handler	16	static
+../Core/Src/main.c:324:1:dma_transfer_handler	16	static,ignoring_inline_asm

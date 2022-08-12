@@ -22,6 +22,9 @@ uint8_t rx_dma_buffer[10];
 uint8_t rx_int_buffer[128];
 uint32_t rx_index;
 
+uint8_t x_h, x_l, y_h, y_l, z_h, z_l;
+short x, y, z;
+
 /*
  *\brief
  *\param[in]
@@ -39,17 +42,29 @@ main() {
 	while (1) {
 		spi_ss_enable();
 		spi_send_data(0x20|0x40);
-		spi_send_data(0x07);
-		spi_send_data(0x00);
+		spi_send_data(0x0F);
+		//spi_send_data(0x00);
 		spi_ss_disable();
 
 		spi_ss_enable();
-		spi_send_data(0x20|0x80|0x40);
-		spi_send_data(0xFF);
-		spi_receive_data();
-		spi_receive_data();
+		spi_send_data(0x20|0x80);
 		spi_receive_data();
 		spi_ss_disable();
+
+		spi_ss_enable();
+		spi_send_data(0x28|0x80|0x40);
+		x_l = spi_receive_data();
+		x_h = spi_receive_data();
+		y_l = spi_receive_data();
+		y_h = spi_receive_data();
+		z_l = spi_receive_data();
+		z_h = spi_receive_data();
+		spi_ss_disable();
+
+		x = (x_h << 8)|x_l;
+		y = (y_h << 8)|y_l;
+		z = (z_h << 8)|z_l;
+
 	}
 
 	return 0;

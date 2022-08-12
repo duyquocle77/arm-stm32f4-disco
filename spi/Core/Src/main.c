@@ -1,6 +1,6 @@
 #include "main.h"
 #include <stdint.h>
-#include<string.h>
+#include <string.h>
 
 void vectortable_move();
 void tim_systick_init();
@@ -8,7 +8,10 @@ void sys_delay_ms(uint32_t time_milisec);
 void interrupt_init();
 void dma_init();
 void spi_init();
+void spi_ss_enable();
+void spi_ss_disable();
 void spi_send_data(uint8_t data);
+void spi_send_string(char* str);
 uint8_t spi_receive_data();
 void spi_receive_handler();
 void dma_transfer_handler();
@@ -32,8 +35,10 @@ main() {
 	interrupt_init();
 
 	while (1) {
+		spi_ss_enable();
 		spi_send_data(0x0F|0x80);
-		spi_send_data(0x20|0x80);
+		spi_send_data(0xFF);
+		spi_ss_disable();
 	}
 
 	return 0;
@@ -226,26 +231,58 @@ spi_init() {
  *\retval
  */
 void
-spi_send_data(uint8_t data) {
+spi_ss_enable() {
 	uint32_t volatile* const GPIOE_ODR = (uint32_t*)(0x40021000 + 0x14);
+	*GPIOE_ODR &= ~(1 << 3);
+}
+
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+spi_ss_disable() {
+	uint32_t volatile* const GPIOE_ODR = (uint32_t*)(0x40021000 + 0x14);
+	*GPIOE_ODR |= (1 << 3);
+}
+
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+spi_send_data(uint8_t data) {
 	uint32_t volatile* const SPI1_SR   = (uint32_t*)(0x40013000 + 0x08);
 	uint32_t volatile* const SPI1_DR   = (uint32_t*)(0x40013000 + 0x0c);
 	uint8_t tmp;
 
-	/*active slave*/
-	*GPIOE_ODR &= ~(1 << 3);
 
 	//check TXE
 	while (0 == ((*SPI1_SR >> 1) & 1));
 	//send data
-	*SPI1_DR = ((uint32_t)data << 8)|0xFF;
+	*SPI1_DR = (uint32_t)data;
+	//*SPI1_DR = ((uint32_t)data << 8)|0xFF;
 	//check RXNE
 	while (0 == ((*SPI1_SR >> 0) & 1));
 	//clear trash
 	tmp = (uint8_t)*SPI1_DR;
+}
 
-	/*in-active slave*/
-	*GPIOE_ODR |= (1 << 3);
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void spi_send_string(char* str) {
+	while (*str != '\0') {
+		spi_send_data(*str);
+		str++;
+	}
 }
 
 /*
@@ -256,13 +293,9 @@ spi_send_data(uint8_t data) {
  */
 uint8_t
 spi_receive_data() {
-	uint32_t volatile* const GPIOE_ODR = (uint32_t*)(0x40021000 + 0x14);
 	uint32_t volatile* const SPI1_SR   = (uint32_t*)(0x40013000 + 0x08);
 	uint32_t volatile* const SPI1_DR   = (uint32_t*)(0x40013000 + 0x0c);
 	uint8_t data;
-
-	/*active slave*/
-	*GPIOE_ODR &= ~(1 << 3);
 
 	//check TXE
 	while (0 == ((*SPI1_SR >> 1) & 1));
@@ -272,9 +305,6 @@ spi_receive_data() {
 	while (0 == ((*SPI1_SR >> 0) & 1));
 	//read data from slave
 	data = (uint8_t)*SPI1_DR;
-
-	/*in-active slave*/
-	*GPIOE_ODR |= (1 << 3);
 
 	return data;
 }
