@@ -68,7 +68,7 @@ main() {
 		y = (y_h << 8)|y_l;
 		z = (z_h << 8)|z_l;
 
-		sprintf(data_buffer, "x = %d\t\ty = %d\t\tz = %d\r\n", x, y, z);
+		sprintf(data_buffer, "x = %d......y = %d......z = %d\r\n", x, y, z);
 		uart_send_string(data_buffer);
 
 		//sys_delay_ms(100);

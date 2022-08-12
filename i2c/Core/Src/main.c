@@ -3,12 +3,15 @@
 #include <stdint.h>
 #include <string.h>
 
-#define ACC_ADDRESS_7BIT	0x19U
-#define MAG_ADDRESS_7BIT	0x1EU
+#define ACC_ADDRESS_7BIT	0x19
+#define MAG_ADDRESS_7BIT	0x1E
 
 void vectortable_move();
 void tim_systick_init();
 void sys_delay_ms(uint32_t time_milisec);
+void uart_init();
+void uart_send_char(uint8_t charac);
+void uart_send_string(char *string);
 void i2c_init();
 uint8_t i2c_read_data(uint8_t SAD, uint8_t SUB);
 void i2c_write_data(uint8_t SAD, uint8_t SUB, uint8_t data);
@@ -21,7 +24,7 @@ uint8_t x_h, x_l, y_h, y_l, z_h, z_l;
 int16_t x, y, z;
 
 uint8_t acc_id, mag_id;
-char* volatile data_buffer;
+char data_buffer[30];
 
 /*
  *\brief
@@ -33,12 +36,18 @@ int
 main() {
 	vectortable_move();
 	tim_systick_init();
+	uart_init();
 	i2c_init();
 
-	while (1) {
-		//acc_id = i2c_read_data(ACC_ADDRESS_7BIT, 0x0F);
-		//mag_id = i2c_read_data(MAG_ADDRESS_7BIT, 0x4F);
+	/*read i2c address of acc + mag*/
+	acc_id = i2c_read_data(ACC_ADDRESS_7BIT, 0x0F);
+	mag_id = i2c_read_data(MAG_ADDRESS_7BIT, 0x4F);
+	sprintf(data_buffer, "Acc_ID: %#02x---Mag_ID: %#02x\n\r",acc_id, mag_id);
+	uart_send_string(data_buffer);
 
+	while (1) {
+
+		/*cfg acc mode*/
 		i2c_write_data(ACC_ADDRESS_7BIT, 0x20, 0x57);
 		i2c_read_data(ACC_ADDRESS_7BIT, 0x20);
 
@@ -53,8 +62,9 @@ main() {
 		y = (y_h << 8) | y_l;
 		z = (z_h << 8) | z_l;
 
-		sprintf(data_buffer, "x = %d\t\ty = %d\t\tz = %d\t\t", x, y, z);
-		printf(data_buffer);
+		sprintf(data_buffer, "x = %d........y = %d........z = %d\n\r", x, y, z);
+		//sprintf(data_buffer, "%d  -%d  -%d  -%d  -%d  -%d\n\r", x_h, x_l, y_h, y_l, z_h, z_l);
+		uart_send_string(data_buffer);
 	}
 
 	return 0;
@@ -117,6 +127,95 @@ sys_delay_ms(uint32_t time_milisec)
 		while(((*SYS_CSR >> 16) & 1) == 0);
 }
 
+/*
+ * \brief
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
+void
+uart_init() {
+	/*enable clock peripherals*/
+	__HAL_RCC_GPIOA_CLK_ENABLE();
+	__HAL_RCC_USART2_CLK_ENABLE();
+
+	uint32_t volatile *const GPIOA_MODER = (uint32_t *)(0x40020000 + 0x00);
+	uint32_t volatile *const GPIOA_AFRL  = (uint32_t *)(0x40020000 + 0x20);
+	uint16_t volatile *const USART2_BRR = (uint16_t *)(0x40004400 + 0x08);
+	uint32_t volatile *const USART2_CR1 = (uint32_t *)(0x40004400 + 0x0c);
+	uint32_t volatile *const USART2_CR2 = (uint32_t *)(0x40004400 + 0x10);
+
+	/*set PA2 as TX, PA3 as RX*/
+	/*alternate mode*/
+	*GPIOA_MODER &= ~((0b11 << (2 * 3)) | (0b11 << (2 * 2)));
+	*GPIOA_MODER |=   (0b10 << (2 * 3)) | (0b10 << (2 * 2));
+
+	/*alternate function 7*/
+	*GPIOA_AFRL &= ~((0b1111 << (4 * 3)) | (0b1111 << (4 * 2)));
+	*GPIOA_AFRL |=   (0b0111 << (4 * 3)) | (0b0111 << (4 * 2));
+
+	/*set data frame*/
+	/*word length: 8 data bits*/
+	*USART2_CR1 &= ~(1 << 12);	// bit M
+	/* 1 stop bit*/
+	*USART2_CR2 &= (1 << 13);
+	*USART2_CR2 &= (1 << 12);
+	/*disable parity bit*/
+	*USART2_CR1 &= ~(1 << 10);	// bit PCE
+
+	/*set baudrate*/
+	//fuart = 16mhz, baud = 9600 -> USART2_BRR = 104.1875
+	/*uint16_t DIV_Mantissa = 16000000 / (16 * baudrate);
+	uint8_t  DIV_Fraction = round((16000000 % (16 * baudrate)) * 16);
+	*USART2_BRR = (DIV_Mantissa << 4) | DIV_Fraction;*/
+	*USART2_BRR = (104 << 4) | 3;
+
+
+	/*enable Tx, Rx*/
+	*USART2_CR1 |= (1 << 2) | (1 << 3);	// bit TE, RE
+
+	/*enable UART*/
+	*USART2_CR1 |= (1 << 13);	// bit UE
+}
+
+/*
+ * \brief
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
+void
+uart_send_char(uint8_t charac) {
+	uint32_t volatile *const UART2_SR = (uint32_t *)(0x40004400 + 0x00);
+	uint8_t  volatile *const UART2_DR = (uint8_t *)(0x40004400 + 0x04);
+
+	/*wait data empty*/
+	while (((*UART2_SR >> 7) & 1) == 0) {}
+
+	/*transmiss data*/
+	*UART2_DR = charac;
+
+	/*wait transmission complete*/
+	while(((*UART2_SR >> 6) & 1) == 0) {}
+
+	/*clear TC bit*/
+	*UART2_SR &= ~(1 << 6);
+}
+
+/*
+ * \brief
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
+void
+uart_send_string(char *string)
+{
+	while (*string != '\0') {
+		uart_send_char(*string);
+		string++;
+	}
+}
 
 /*
  *\brief
@@ -157,6 +256,8 @@ i2c_init() {
 	/*prescale : 100 kHz*/
 	*I2C1_CCR = 160;
 
+	*I2C1_CR1 |= (1 << 10);
+
 	/*enable i2c*/
 	*I2C1_CR1 |= (1 << 0);
 }
@@ -174,6 +275,7 @@ i2c_read_data(uint8_t SAD_7bit, uint8_t SUB) {
 	uint32_t volatile* const I2C1_SR1   = (uint32_t*)(0x40005400 + 0x14);
 	uint32_t volatile* const I2C1_SR2   = (uint32_t*)(0x40005400 + 0x18);
 	uint8_t data;
+	uint32_t tmp;
 
 	SAD_7bit = SAD_7bit << 1;
 
@@ -190,7 +292,7 @@ i2c_read_data(uint8_t SAD_7bit, uint8_t SUB) {
 	/*wait ADĐR bit*/
 	while (((*I2C1_SR1 >> 1) & 1) == 0);
 	/*clear ADDR flag*/
-	(void)*(I2C1_SR2);
+	tmp = *(I2C1_SR2);
 
 	/*send register address*/
 	*I2C1_DR = SUB;
@@ -209,8 +311,10 @@ i2c_read_data(uint8_t SAD_7bit, uint8_t SUB) {
 	/*wait ADĐR bit*/
 	while (((*I2C1_SR1 >> 1) & 1) == 0);
 	/*clear ADDR flag*/
-	(void)*(I2C1_SR2);
+	tmp = *(I2C1_SR2);
 
+	/*wait RxNE bit*/
+	while (((*I2C1_SR1 >> 6) & 1) == 0);
 	/*read data*/
 	data = *I2C1_DR;
 
