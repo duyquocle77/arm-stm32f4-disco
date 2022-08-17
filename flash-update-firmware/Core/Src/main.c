@@ -22,6 +22,7 @@ int
 main() {
 	vectortable_move();
 	tim_systick_init();
+	uart_init();
 
 	flash_erase_sector(7);
 	flash_write_byte(0x08060000, 'a');
@@ -235,7 +236,7 @@ flash_write_byte(uint32_t address, uint8_t data) {
 	/*SET programming mode*/
 	*FLASH_CR |= (1 << 0);
 	/*write data*/
-	*(uint32_t*)(address) = (uint32_t)data;
+	*(uint8_t*)(address) = data;
 	/*check BUSY bit*/
 	while (((*FLASH_SR >> 16) & 1) == 1) {}
 }

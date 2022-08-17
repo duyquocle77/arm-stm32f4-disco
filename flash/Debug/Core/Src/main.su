@@ -1,6 +1,6 @@
 ../Core/Src/main.c:19:1:main	8	static
-../Core/Src/main.c:41:1:vectortable_move	24	static
-../Core/Src/main.c:60:1:tim_systick_init	16	static
-../Core/Src/main.c:82:1:sys_delay_ms	24	static
-../Core/Src/main.c:98:1:flash_erase_sector	32	static
-../Core/Src/main.c:130:1:flash_write_byte	32	static
+../Core/Src/main.c:43:1:vectortable_move	24	static
+../Core/Src/main.c:62:1:tim_systick_init	16	static
+../Core/Src/main.c:84:1:sys_delay_ms	24	static
+../Core/Src/main.c:100:1:flash_erase_sector	32	static
+../Core/Src/main.c:132:1:flash_write_byte	32	static

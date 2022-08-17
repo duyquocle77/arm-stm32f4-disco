@@ -22,6 +22,9 @@ main() {
 
 	flash_erase_sector(7);
 	flash_write_byte(0x08060000, 'a');
+	flash_write_byte(0x08060001, 'b');
+	flash_write_byte(0x08060002, 'c');
+	flash_write_byte(0x08060003, 'd');
 
 	while (1) {
 
@@ -142,7 +145,7 @@ flash_write_byte(uint32_t address, uint8_t data) {
 	/*SET programming mode*/
 	*FLASH_CR |= (1 << 0);
 	/*write data*/
-	*(uint32_t*)(address) = (uint32_t)data;
+	*(uint8_t*)(address) = data;
 	/*check BUSY bit*/
 	while (((*FLASH_SR >> 16) & 1) == 1) {}
 }

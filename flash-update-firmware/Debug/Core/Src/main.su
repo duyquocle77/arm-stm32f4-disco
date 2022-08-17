@@ -1,9 +1,9 @@
 ../Core/Src/main.c:22:1:main	8	static
-../Core/Src/main.c:44:1:vectortable_move	24	static
-../Core/Src/main.c:63:1:tim_systick_init	16	static
-../Core/Src/main.c:85:1:sys_delay_ms	24	static
-../Core/Src/main.c:101:1:uart_init	40	static
-../Core/Src/main.c:152:1:uart_send_char	24	static
-../Core/Src/main.c:176:1:uart_send_string	16	static
-../Core/Src/main.c:191:1:flash_erase_sector	32	static
-../Core/Src/main.c:223:1:flash_write_byte	32	static
+../Core/Src/main.c:45:1:vectortable_move	24	static
+../Core/Src/main.c:64:1:tim_systick_init	16	static
+../Core/Src/main.c:86:1:sys_delay_ms	24	static
+../Core/Src/main.c:102:1:uart_init	40	static
+../Core/Src/main.c:153:1:uart_send_char	24	static
+../Core/Src/main.c:177:1:uart_send_string	16	static
+../Core/Src/main.c:192:1:flash_erase_sector	32	static
+../Core/Src/main.c:224:1:flash_write_byte	32	static
