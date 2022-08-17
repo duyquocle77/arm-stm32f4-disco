@@ -1,0 +1,21 @@
+12:40:33 **** Incremental Build of configuration Debug for project spi-i3g4250d-16bit ****
+make -j8 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'spi_send_data':
+../Core/Src/main.c:300:10: warning: variable 'tmp' set but not used [-Wunused-but-set-variable]
+  300 |  uint8_t tmp;
+      |          ^~~
+arm-none-eabi-gcc -o "spi-i3g4250d-16bit.elf" @"objects.list"   -mcpu=cortex-m4 -T"D:\LeDuyQuoc\arm-stm32f411ve-discovery\stm32cubeide\f411vet6-disco\spi-i3g4250d-16bit\STM32F411VETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="spi-i3g4250d-16bit.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: spi-i3g4250d-16bit.elf
+ 
+arm-none-eabi-size   spi-i3g4250d-16bit.elf 
+arm-none-eabi-objdump -h -S  spi-i3g4250d-16bit.elf  > "spi-i3g4250d-16bit.list"
+   text	   data	    bss	    dec	    hex	filename
+   1700	     12	   1572	   3284	    cd4	spi-i3g4250d-16bit.elf
+Finished building: default.size.stdout
+ 
+Finished building: spi-i3g4250d-16bit.list
+ 
+
+12:40:34 Build Finished. 0 errors, 1 warnings. (took 794ms)
+

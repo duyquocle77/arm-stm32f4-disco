@@ -1,0 +1,10 @@
+../Core/Src/main.c:36:1:main	16	static
+../Core/Src/main.c:80:1:vectortable_move	24	static
+../Core/Src/main.c:99:1:tim_systick_init	16	static
+../Core/Src/main.c:121:1:sys_delay_ms	24	static
+../Core/Src/main.c:137:1:uart_init	40	static
+../Core/Src/main.c:188:1:uart_send_char	24	static
+../Core/Src/main.c:212:1:uart_send_string	16	static
+../Core/Src/main.c:227:1:i2c_init	48	static
+../Core/Src/main.c:272:1:i2c_read_data	40	static
+../Core/Src/main.c:334:1:i2c_write_data	32	static

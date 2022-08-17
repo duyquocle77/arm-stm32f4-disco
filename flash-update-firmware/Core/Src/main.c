@@ -1,0 +1,241 @@
+#include "main.h"
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+
+void vectortable_move();
+void tim_systick_init();
+void sys_delay_ms(uint32_t time_milisec);
+void uart_init();
+void uart_send_char(uint8_t charac);
+void uart_send_string(char *string);
+void flash_erase_sector(uint8_t sector);
+void flash_write_byte(uint32_t address, uint8_t data);
+
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+int
+main() {
+	vectortable_move();
+	tim_systick_init();
+
+	flash_erase_sector(7);
+	flash_write_byte(0x08060000, 'a');
+
+	while (1) {
+
+
+	}
+
+	return 0;
+}
+
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+vectortable_move()
+{
+	/* size(vector_table) = 0x194 + 0x4 - 0x00 = 0x198 */
+	/* move vector table from flash to ram */
+	void *volatile ram   = (void *volatile)0x20000000;
+	void *volatile flash = (void *volatile)0x08000000;
+	memcpy(ram, flash, 0x198);
+
+	uint32_t *VTOR = (uint32_t *)(0xE000ED08);
+	*VTOR = 0x20000000;
+}
+
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+tim_systick_init()
+{
+	uint32_t *SYS_CSR = (uint32_t *)(0xe000e010 + 0x00);
+	uint32_t *SYS_RVR = (uint32_t *)(0xe000e010 + 0x00);
+
+	/*clock source: processor clock*/
+	*SYS_CSR |= (1 << 2);	// bit CLKSOURCE
+
+	/*set count*/
+	*SYS_RVR = 160000 - 1;
+
+	/*enable the counter*/
+	*SYS_CSR |= (1 << 0);	// bit ENABLE
+}
+
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+sys_delay_ms(uint32_t time_milisec)
+{
+	uint32_t *SYS_CSR = (uint32_t *)(0xe000e010 + 0x00);
+
+	for(uint32_t i = 0; i <= time_milisec; i++)
+		/*wait bit COUNTFLAG set 1*/
+		while(((*SYS_CSR >> 16) & 1) == 0);
+}
+
+/*
+ * \brief
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
+void
+uart_init() {
+	/*enable clock peripherals*/
+	__HAL_RCC_GPIOA_CLK_ENABLE();
+	__HAL_RCC_USART2_CLK_ENABLE();
+
+	uint32_t volatile *const GPIOA_MODER = (uint32_t *)(0x40020000 + 0x00);
+	uint32_t volatile *const GPIOA_AFRL  = (uint32_t *)(0x40020000 + 0x20);
+	uint16_t volatile *const USART2_BRR = (uint16_t *)(0x40004400 + 0x08);
+	uint32_t volatile *const USART2_CR1 = (uint32_t *)(0x40004400 + 0x0c);
+	uint32_t volatile *const USART2_CR2 = (uint32_t *)(0x40004400 + 0x10);
+
+	/*set PA2 as TX, PA3 as RX*/
+	/*alternate mode*/
+	*GPIOA_MODER &= ~((0b11 << (2 * 3)) | (0b11 << (2 * 2)));
+	*GPIOA_MODER |=   (0b10 << (2 * 3)) | (0b10 << (2 * 2));
+
+	/*alternate function 7*/
+	*GPIOA_AFRL &= ~((0b1111 << (4 * 3)) | (0b1111 << (4 * 2)));
+	*GPIOA_AFRL |=   (0b0111 << (4 * 3)) | (0b0111 << (4 * 2));
+
+	/*set data frame*/
+	/*word length: 8 data bits*/
+	*USART2_CR1 &= ~(1 << 12);	// bit M
+	/* 1 stop bit*/
+	*USART2_CR2 &= (1 << 13);
+	*USART2_CR2 &= (1 << 12);
+	/*disable parity bit*/
+	*USART2_CR1 &= ~(1 << 10);	// bit PCE
+
+	/*set baudrate*/
+	//fuart = 16mhz, baud = 9600 -> USART2_BRR = 104.1875
+	/*uint16_t DIV_Mantissa = 16000000 / (16 * baudrate);
+	uint8_t  DIV_Fraction = round((16000000 % (16 * baudrate)) * 16);
+	*USART2_BRR = (DIV_Mantissa << 4) | DIV_Fraction;*/
+	*USART2_BRR = (104 << 4) | 3;
+
+
+	/*enable Tx, Rx*/
+	*USART2_CR1 |= (1 << 2) | (1 << 3);	// bit TE, RE
+
+	/*enable UART*/
+	*USART2_CR1 |= (1 << 13);	// bit UE
+}
+
+/*
+ * \brief
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
+void
+uart_send_char(uint8_t charac) {
+	uint32_t volatile *const UART2_SR = (uint32_t *)(0x40004400 + 0x00);
+	uint8_t  volatile *const UART2_DR = (uint8_t *)(0x40004400 + 0x04);
+
+	/*wait data empty*/
+	while (((*UART2_SR >> 7) & 1) == 0) {}
+
+	/*transmiss data*/
+	*UART2_DR = charac;
+
+	/*wait transmission complete*/
+	while(((*UART2_SR >> 6) & 1) == 0) {}
+
+	/*clear TC bit*/
+	*UART2_SR &= ~(1 << 6);
+}
+
+/*
+ * \brief
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
+void
+uart_send_string(char *string)
+{
+	while (*string != '\0') {
+		uart_send_char(*string);
+		string++;
+	}
+}
+
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+flash_erase_sector(uint8_t sector) {
+	uint32_t volatile* const FLASH_KEYR = (uint32_t*)(0x40023c00 + 0x04);
+	uint32_t volatile* const FLASH_SR   = (uint32_t*)(0x40023c00 + 0x0C);
+	uint32_t volatile* const FLASH_CR   = (uint32_t*)(0x40023c00 + 0x10);
+
+
+	/*check LOCK bit*/
+	if (((*FLASH_CR >> 31) & 1) == 1) {
+		*FLASH_KEYR = 0x45670123;
+		*FLASH_KEYR = 0xCDEF89AB;
+	}
+	/*check BUSY bit*/
+	while (((*FLASH_SR >> 16) & 1) == 1) {}
+	/*SET erase sector mode*/
+	*FLASH_CR |= (1 << 1);
+	/*select sector*/
+	*FLASH_CR |= (sector << 3);
+	/*start erase*/
+	*FLASH_CR |= (1 << 16);
+	/*check BUSY bit*/
+	while (((*FLASH_SR >> 16) & 1) == 1) {}
+	/*CLEAR erase sector mode*/
+	*FLASH_CR &= ~(1 << 1);
+}
+
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+flash_write_byte(uint32_t address, uint8_t data) {
+	uint32_t volatile* const FLASH_KEYR = (uint32_t*)(0x40023c00 + 0x04);
+	uint32_t volatile* const FLASH_SR   = (uint32_t*)(0x40023c00 + 0x0C);
+	uint32_t volatile* const FLASH_CR   = (uint32_t*)(0x40023c00 + 0x10);
+
+	/*check LOCK bit*/
+	if (((*FLASH_CR >> 31) & 1) == 1) {
+		*FLASH_KEYR = 0x45670123;
+		*FLASH_KEYR = 0xCDEF89AB;
+	}
+	/*check BUSY bit*/
+	while (((*FLASH_SR >> 16) & 1) == 1) {}
+	/*SET programming mode*/
+	*FLASH_CR |= (1 << 0);
+	/*write data*/
+	*(uint32_t*)(address) = (uint32_t)data;
+	/*check BUSY bit*/
+	while (((*FLASH_SR >> 16) & 1) == 1) {}
+}

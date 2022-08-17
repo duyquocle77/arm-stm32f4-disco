@@ -4,3 +4,17 @@ duty
 data
 rx_int_buffer
 rx_dma_buffer
+rx_index
+x
+y
+z
+data_buffer
+x_value
+low
+high
+acc_id
+mag_id
+x_h
+x_l
+y_h
+y_l

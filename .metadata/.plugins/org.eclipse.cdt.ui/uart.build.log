@@ -1,21 +1,10 @@
-20:31:12 **** Incremental Build of configuration Debug for project uart ****
+20:24:54 **** Incremental Build of configuration Debug for project uart ****
 make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c: In function 'dma_init':
-../Core/Src/main.c:92:27: warning: unused variable 'USART2_DR' [-Wunused-variable]
-   92 |  uint32_t volatile *const USART2_DR   = (uint32_t *)(0x40004400 + 0x04);
-      |                           ^~~~~~~~~
-arm-none-eabi-gcc -o "uart.elf" @"objects.list"   -mcpu=cortex-m4 -T"D:\LeDuyQuoc\arm-stm32f411ve-discovery\stm32cubeide\f411vet6-disco\uart\STM32F411VETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="uart.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: uart.elf
- 
 arm-none-eabi-size   uart.elf 
-arm-none-eabi-objdump -h -S  uart.elf  > "uart.list"
    text	   data	    bss	    dec	    hex	filename
-   1600	     12	   1716	   3328	    d00	uart.elf
+   1632	     12	   1716	   3360	    d20	uart.elf
 Finished building: default.size.stdout
  
-Finished building: uart.list
- 
 
-20:31:13 Build Finished. 0 errors, 1 warnings. (took 705ms)
+20:24:54 Build Finished. 0 errors, 0 warnings. (took 234ms)
 

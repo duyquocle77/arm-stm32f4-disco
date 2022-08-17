@@ -1,0 +1,146 @@
+
+#include "main.h"
+#include<stdint.h>    //library for uint32_t ( int type)
+#include<string.h>   //Library for memcpy
+
+
+char uart2_rx_buff[10];
+char spi1_rx_buff[1028];
+
+unsigned char spi_index=0;
+unsigned char uart_rx_index=0;
+
+ char low;
+
+ char high;
+ char x_value;
+unsigned char y_value=0;
+unsigned char z_value=0;
+
+
+void spi_init()
+{
+	__HAL_RCC_GPIOA_CLK_ENABLE();
+	uint32_t* MODER=0x40020000;
+	//*MODER &=~(0x<<10); //CLEAR BIT
+	*MODER|=(0b10<<10)|(0b10<<12)|(0b10<<14); //Set PA5,6,7 as alternate function
+
+	uint32_t* AFRL=(uint32_t*)0x40020020;
+	//*AFRL &=~(0xfff<<);
+	*AFRL |= (5 <<20); //AND 0101   //Set MOSI, MISO, SCLK MODE for PA5,6,7
+	*AFRL |= (5 <<24);
+	*AFRL |= (5 <<28);
+
+   __HAL_RCC_SPI1_CLK_ENABLE();
+	uint32_t* SPI_CR1=0x40013000;
+	*SPI_CR1|=(1<<2);// set Master mode
+	*SPI_CR1|=(0b011<<3); //set fSPI  start 3-5  -Baudrate
+	*SPI_CR1|=(1<<9)|(1<<8);////Set Select slave
+	*SPI_CR1|=(1<<11);// d a t a frame 8 bit
+
+
+	//Set mode 3 do cam bien dung mode 3
+	*SPI_CR1 |= (1<<1);
+	*SPI_CR1 |= (1<<0);
+
+
+	*SPI_CR1|=(1<<6);//enable SPI
+
+     /*Set select slave*/
+	__HAL_RCC_GPIOE_CLK_ENABLE();//SET OUPUT PE3
+	uint32_t* GPIOE_MODER=0x40021000;
+	*GPIOE_MODER &=~(0b11<<6);
+	*GPIOE_MODER |=(0b01<<6);//Set PE3 PORT
+	uint32_t* GPIOE_ODR=0x40021014;
+	*GPIOE_ODR|=(1<<3); //Set output
+
+}
+
+void spi_send(uint32_t data)
+{
+
+	uint8_t temp;
+	//active
+	uint32_t* GPIOE_ODR=0x40021014;
+	*GPIOE_ODR &=~(1<<3); //Set SS ACTIVE
+	uint32_t* SR=(uint32_t*)0x40013008;
+    uint8_t* DR=(uint8_t*)0x4001300c;
+	while(((*SR>>1)&1) !=1);
+	//*DR=(data<<8)|(0XFF); //write du lieu can truyen vao thanh ghi DR
+	*DR=data;
+	while(((*SR>>7)&1) ==1);//CHECK BSY  register
+	while(((*SR>>0)&1) !=1);
+	//(void)*DR
+	temp=*DR;//
+	//*GPIOE_ODR|=(1<<3); //acctive
+}
+
+uint32_t spi_recv()
+{
+	uint8_t data;
+	uint32_t* GPIOE_ODR=0x40021014;
+	*GPIOE_ODR&=~(1<<3);
+	uint32_t* SR=(uint32_t*)0x40013008;
+	uint8_t* DR=(uint8_t*)0x4001300c;
+
+    while(((*SR>>1)&1) !=1);
+    *DR=0xFF;// Creat a fake clock for slave
+    while(((*SR>>7)&1) !=1);
+    while(((*SR>>0)&1) !=1);
+    data = *DR;
+	 //write du lieu vao bien data
+	//*SR &=~(1<<5);
+   // *GPIOE_ODR|=(1<<3);
+	 return data;
+
+}
+int main()
+{
+
+	// HAL_Init();
+	 void* dst=0x20000000;//address of RAM   memory-khai bao theo yeu cau cua ham memcp
+	 void* src=0x08000000;//address of flash memory
+     memcpy(dst,src,0x198);
+
+     /*Bao voi ARM len RAM tim bang VTTB*/
+     uint32_t* VTOR=0xe000ed08;
+     *VTOR=0x20000000; //Inform for ARM- VTTB at this address
+
+     uint16_t* CCR1=(uint16_t*)0x40010034;
+     systick_init();
+     spi_init();
+    // char* msg="HELLO \r\n";
+     char* msg= "0x8F";
+    // uint32_t* SR=(uint32_t*)0x40004400;
+    // uint8_t* DR=(uint8_t*)0x40004404;
+
+
+	  spi_init();
+	  uint32_t* GPIOE_ODR=0x40021014;
+	  *GPIOE_ODR&=~(1<<3); //Enale CS
+	  //spi_send(0X8F);  //SEND 0X0F 00001111 + BIT READ = 1 at position 7 =>> 1000 1111
+	  // spi1_rx_buff[spi_index]=spi_recv(); //revice ID device
+	  spi_send(0x20);    //CTRL_REG1 (20h) register
+	  spi_send(0x20|0x0F); // set PD ,x,y,z axis
+	  spi_send(0x28|1<<7|1<<6);
+	  low[spi_index]=spi_recv();
+	  spi_send(0x29|1<<7|1<<6);
+	  high[spi_index]=spi_recv();
+	  x_value=((high<<8)|low);
+	  *GPIOE_ODR|=(1<<3);//Disale CS UP TO 1 to complete the transfer and recieve process
+
+
+
+
+  while(1)
+	 {
+
+
+	 }
+
+
+
+
+
+     return 0;
+}

@@ -1,0 +1,10 @@
+20:14:28 **** Incremental Build of configuration Debug for project spi-i3g4250d-8bit ****
+make -j8 all 
+arm-none-eabi-size   spi-i3g4250d-8bit.elf 
+   text	   data	    bss	    dec	    hex	filename
+   1760	     12	   1580	   3352	    d18	spi-i3g4250d-8bit.elf
+Finished building: default.size.stdout
+ 
+
+20:14:28 Build Finished. 0 errors, 0 warnings. (took 401ms)
+
