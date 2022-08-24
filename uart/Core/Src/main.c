@@ -16,8 +16,8 @@ void dma_transfer_handler();
 void sys_delay_ms(uint32_t time_milisec);
 
 uint8_t data;
-uint8_t rx_dma_buffer[10];
-uint8_t rx_int_buffer[128];
+uint8_t rx_dma_buffer[5820];
+uint8_t rx_int_buffer[5820];
 uint8_t rx_index;
 
 int main(void) {

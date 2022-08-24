@@ -1,0 +1,22 @@
+19:48:26 **** Incremental Build of configuration Debug for project blink-update-firmware ****
+make -j8 all 
+arm-none-eabi-gcc -o "blink-update-firmware.elf" @"objects.list"   -mcpu=cortex-m4 -T"D:\LeDuyQuoc\arm-stm32f411ve-discovery\stm32cubeide\f411vet6-disco\blink-update-firmware\STM32F411VETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="blink-update-firmware.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: blink-update-firmware.elf
+ 
+arm-none-eabi-size   blink-update-firmware.elf 
+arm-none-eabi-objdump -h -S  blink-update-firmware.elf  > "blink-update-firmware.list"
+arm-none-eabi-objcopy  -O ihex  blink-update-firmware.elf  "blink-update-firmware.hex"
+arm-none-eabi-objcopy  -O binary  blink-update-firmware.elf  "blink-update-firmware.bin"
+   text	   data	    bss	    dec	    hex	filename
+   5800	     20	   1572	   7392	   1ce0	blink-update-firmware.elf
+Finished building: default.size.stdout
+ 
+Finished building: blink-update-firmware.list
+ 
+Finished building: blink-update-firmware.hex
+Finished building: blink-update-firmware.bin
+ 
+ 
+
+19:48:27 Build Finished. 0 errors, 0 warnings. (took 750ms)
+

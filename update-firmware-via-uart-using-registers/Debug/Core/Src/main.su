@@ -1,0 +1,12 @@
+../Core/Src/main.c:220:1:flash_lock	16	static
+../Core/Src/main.c:236:1:flash_unlock	16	static
+../Core/Src/main.c:254:1:flash_erase_sector	24	static
+../Core/Src/main.c:283:1:flash_program_byte	40	static
+../Core/Src/main.c:312:1:reset_system	16	static
+../Core/Src/main.c:325:1:update_firmware	8	static
+../Core/Src/main.c:52:1:main	8	static
+../Core/Src/main.c:75:1:vectortable_move	24	static
+../Core/Src/main.c:94:1:interrupt_init	24	static
+../Core/Src/main.c:116:1:dma_init	40	static
+../Core/Src/main.c:151:1:uart_init	40	static
+../Core/Src/main.c:203:1:dma_transfer_handler	16	static

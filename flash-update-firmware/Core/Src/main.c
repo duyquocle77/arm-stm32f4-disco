@@ -6,11 +6,16 @@
 void vectortable_move();
 void tim_systick_init();
 void sys_delay_ms(uint32_t time_milisec);
+void dma_init();
+void uart_init();
 void uart_init();
 void uart_send_char(uint8_t charac);
 void uart_send_string(char *string);
+void uart_receive_handler();
+void dma_transfer_handler();
 void flash_erase_sector(uint8_t sector);
-void flash_write_byte(uint32_t address, uint8_t data);
+void flash_write_byte(void* address, uint8_t data);
+void flash_write_multibyte(void* address, uint8_t* data, uint8_t size);
 
 /*
  *\brief
@@ -90,6 +95,73 @@ sys_delay_ms(uint32_t time_milisec)
 	for(uint32_t i = 0; i <= time_milisec; i++)
 		/*wait bit COUNTFLAG set 1*/
 		while(((*SYS_CSR >> 16) & 1) == 0);
+}
+
+/*
+ * \brief
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
+void
+interrupt_init() {
+	/*-----------------------UART Receive complete Interrupt-----------------------*/
+	uint32_t volatile *const USART2_CR1 = (uint32_t *)(0x40004400 + 0x0c);
+	uint32_t volatile *const NVIC_ISER1 = (uint32_t *)(0xe000e100 + 0x04);
+	//enable vector interrupt position 38
+	*NVIC_ISER1 |= (1 << (38 - 32));
+	/*change uart-interrupt handler*/
+	*((volatile uint32_t *const)(0x20000000 + 0xD8)) = ((uint32_t)uart_receive_handler | 1);
+	/*enable interrupt Rx*/
+	*USART2_CR1 |= (1 << 5);	// bit RXNEIE
+
+
+	/*-----------------------DMA Transfer complete Interrupt-----------------------*/
+	uint32_t volatile *const DMA_HIFCR    = (uint32_t *)(0x40026000 + 0x0C);
+	uint32_t volatile *const DMA1_S7CR    = (uint32_t *)(0x40026000 + 0x10 + (0x18 * 7));
+	/*clear stream 7 transfer complete interrupt flag*/
+	*DMA_HIFCR |= (1 << 27);	// bit CTCIF7
+	/*enable vector interrupt position 47*/
+	*NVIC_ISER1 |= (1 << (47 - 32));
+	/*change dma-interrupt handler*/
+	*((volatile uint32_t *const)(0x20000000 + 0xFC)) = ((uint32_t)dma_transfer_handler | 1);
+	/*enable transfer complete enable*/
+	*DMA1_S7CR |= (1 << 4);		// bit TCIE
+}
+
+/*
+ * \brief
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
+void
+dma_init() {
+	__HAL_RCC_DMA1_CLK_ENABLE();
+
+	/*-----------------------Rx DMA-----------------------*/
+	uint32_t volatile *const USART2_DR   = (uint32_t *)(0x40004400 + 0x04);
+	uint32_t volatile *const USART2_CR3  = (uint32_t *)(0x40004400 + 0x14);
+	uint32_t volatile *const DMA1_S7CR    = (uint32_t *)(0x40026000 + 0x10 + (0x18 * 7));
+	uint32_t volatile *const DMA1_S7NDTR  = (uint32_t *)(0x40026000 + 0x14 + (0x18 * 7));
+	uint32_t volatile *const DMA1_S7PAR   = (uint32_t *)(0x40026000 + 0x18 + (0x18 * 7));
+	uint32_t volatile *const DMA1_S7M0AR  = (uint32_t *)(0x40026000 + 0x1c + (0x18 * 7));
+	/*Rx DMA enable*/
+	*USART2_CR3 |= (1 << 6);
+	/*channel 6*/
+	*DMA1_S7CR |= (6 << 25);
+	/*number of data*/
+	*DMA1_S7NDTR = sizeof(rx_dma_buffer);
+	/*peripheral address*/
+	*DMA1_S7PAR = (uint32_t)USART2_DR;
+	/*memory address*/
+	*DMA1_S7M0AR = (uint32_t)rx_dma_buffer;
+	/*circular mode*/
+	*DMA1_S7CR |= (1 << 8);
+	/*memory increment mode*/
+	*DMA1_S7CR |= (1 << 10);
+	/*DMA stream enable*/
+	*DMA1_S7CR |= (1 << 0);
 }
 
 /*
@@ -221,7 +293,7 @@ flash_erase_sector(uint8_t sector) {
  *\retval
  */
 void
-flash_write_byte(uint32_t address, uint8_t data) {
+flash_write_byte(void* address, uint8_t data) {
 	uint32_t volatile* const FLASH_KEYR = (uint32_t*)(0x40023c00 + 0x04);
 	uint32_t volatile* const FLASH_SR   = (uint32_t*)(0x40023c00 + 0x0C);
 	uint32_t volatile* const FLASH_CR   = (uint32_t*)(0x40023c00 + 0x10);
@@ -239,4 +311,75 @@ flash_write_byte(uint32_t address, uint8_t data) {
 	*(uint8_t*)(address) = data;
 	/*check BUSY bit*/
 	while (((*FLASH_SR >> 16) & 1) == 1) {}
+}
+
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+flash_write_multibyte(void* address, uint8_t* data, uint8_t size) {
+	uint32_t volatile* const FLASH_KEYR = (uint32_t*)(0x40023c00 + 0x04);
+		uint32_t volatile* const FLASH_SR   = (uint32_t*)(0x40023c00 + 0x0C);
+		uint32_t volatile* const FLASH_CR   = (uint32_t*)(0x40023c00 + 0x10);
+
+		/*check LOCK bit*/
+		if (((*FLASH_CR >> 31) & 1) == 1) {
+			*FLASH_KEYR = 0x45670123;
+			*FLASH_KEYR = 0xCDEF89AB;
+		}
+		/*check BUSY bit*/
+		while (((*FLASH_SR >> 16) & 1) == 1) {}
+		/*SET programming mode*/
+		*FLASH_CR |= (1 << 0);
+		/*write data*/
+		for (uint8_t i; i <= size; i++) {
+			*(uint8_t*)(address) = data[i];
+			address++;
+		}
+		/*check BUSY bit*/
+		while (((*FLASH_SR >> 16) & 1) == 1) {}
+}
+
+/*
+ * \brief
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
+void
+uart_receive_handler()
+{
+	uint32_t volatile *const USART2_SR = (uint32_t *)(0x40004400 + 0x00);
+	uint32_t volatile *const UART2_DR  = (uint32_t *)(0x40004400 + 0x04);
+
+	/*read data*/
+	rx_int_buffer[rx_index] = *UART2_DR;
+	rx_index++;
+
+	if (rx_index >= 50) {
+		rx_index = 0;
+	}
+
+	/*clear RXNE*/
+	*USART2_SR &= ~(1 << 5);
+}
+
+/*
+ * \brief
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
+void
+dma_transfer_handler() {
+	uint32_t volatile *const DMA1_HIFCR    = (uint32_t *)(0x40026000 + 0x0C);
+
+	/*handler*/
+	__asm("NOP");
+
+	/*clear stream 7 transfer complete interrupt flag*/
+	*DMA1_HIFCR |= (1 << 27);	// bit CTCIF7
 }
