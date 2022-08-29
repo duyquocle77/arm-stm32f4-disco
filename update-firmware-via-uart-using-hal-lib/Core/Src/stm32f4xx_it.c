@@ -204,7 +204,7 @@ void SysTick_Handler(void)
 void DMA1_Stream5_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Stream5_IRQn 0 */
-	if (__HAL_DMA_GET_COUNTER(&hdma_usart2_rx) = 0) {
+	if (__HAL_DMA_GET_COUNTER(&hdma_usart2_rx) == 0) {
 		receive_done = 1;
 	}
   /* USER CODE END DMA1_Stream5_IRQn 0 */

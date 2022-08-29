@@ -56,7 +56,7 @@ main() {
 	interrupt_init();
 
 	while(!receive_done);
-	//update_firmware();
+	update_firmware();
 
 	while (1) {
 

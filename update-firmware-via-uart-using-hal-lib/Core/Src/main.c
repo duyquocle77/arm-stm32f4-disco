@@ -74,12 +74,12 @@ static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 void vectortable_move();
 
-void flash_lock() __attribute__((section(".RamFunc")));
-void flash_unlock() __attribute__((section(".RamFunc")));
-void flash_erase_sector(eSERTOR_t sector) __attribute__((section(".RamFunc")));
-void flash_program_byte(void* address, uint8_t* buffer, uint8_t size) __attribute__((section(".RamFunc")));
-void reset_system() __attribute__((section(".RamFunc")));
-void update_firmware() __attribute__((section(".RamFunc")));
+void flash_lock() __attribute__((section(".FuncInRam")));
+void flash_unlock() __attribute__((section(".FuncInRam")));
+void flash_erase_sector(eSERTOR_t sector) __attribute__((section(".FuncInRam")));
+void flash_program_byte(void* address, uint8_t* buffer, uint8_t size) __attribute__((section(".FuncInRam")));
+void reset_system() __attribute__((section(".FuncInRam")));
+void update_firmware() __attribute__((section(".FuncInRam")));
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -107,7 +107,7 @@ int main(void)
   /* USER CODE END Init */
 
   /* Configure the system clock */
-  SystemClock_Config();
+ // SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
 
@@ -118,10 +118,11 @@ int main(void)
   MX_DMA_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  //vectortable_move();
+
+  vectortable_move();
   HAL_UART_Receive_DMA(&huart2, rx_dma_buffer, sizeof(rx_dma_buffer));
   while (!receive_done);
-  //update_firmware;
+  update_firmware();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -264,6 +265,7 @@ vectortable_move()
  *\param[out]
  *\retval
  */
+__attribute__((section(".FuncInRam")))
 void
 flash_lock() {
 	uint32_t volatile* const FLASH_CR   = (uint32_t*)(0x40023c00 + 0x10);
@@ -280,6 +282,7 @@ flash_lock() {
  *\param[out]
  *\retval
  */
+__attribute__((section(".FuncInRam")))
 void
 flash_unlock() {
 	uint32_t volatile* const FLASH_KEYR = (uint32_t*)(0x40023c00 + 0x04);
@@ -298,6 +301,7 @@ flash_unlock() {
  *\param[out]
  *\retval
  */
+__attribute__((section(".FuncInRam")))
 void
 flash_erase_sector(eSERTOR_t sector) {
 	uint32_t volatile* const FLASH_SR   = (uint32_t*)(0x40023c00 + 0x0C);
@@ -327,6 +331,7 @@ flash_erase_sector(eSERTOR_t sector) {
  *\param[out]
  *\retval
  */
+__attribute__((section(".FuncInRam")))
 void
 flash_program_byte(void* address, uint8_t* buffer, uint8_t size) {
 	uint32_t volatile* const FLASH_SR   = (uint32_t*)(0x40023c00 + 0x0C);
@@ -356,6 +361,7 @@ flash_program_byte(void* address, uint8_t* buffer, uint8_t size) {
  *\param[out]
  *\retval
  */
+__attribute__((section(".FuncInRam")))
 void
 reset_system() {
 	uint32_t volatile* const AIRCR   = (uint32_t*)0xE000ED0C;
@@ -370,6 +376,7 @@ reset_system() {
  *\param[out]
  *\retval
  */
+__attribute__((section(".FuncInRam")))
 void
 update_firmware() {
 	flash_erase_sector(SECTOR_0);
