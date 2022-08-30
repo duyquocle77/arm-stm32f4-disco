@@ -8,8 +8,12 @@ void tim_systick_init();
 void sys_delay_ms(uint32_t time_milisec);
 void adc_init();
 void adc_dma_receive(void* adc_buffer);
+void adc_start();
+uint32_t adc_read();
+double adc_temp_read();
 
-uint8_t adc_dma_buffer[128];
+uint32_t adc_dma_buffer[128];
+double Temp;
 
 /*
  *\brief
@@ -26,7 +30,19 @@ main() {
 	adc_start();
 
 	while (1) {
+		//Temp = adc_temp_read();
 
+		static double temp = 0, volt = 0;
+		static uint16_t adc_val;
+		adc_val = adc_read();
+		volt = (float)adc_val * (3.3 / 4095);
+
+		if (volt > 0.76) {
+			temp = ((volt - 0.76) / 0.0025) + 25;
+		}
+		else {
+			temp = 25.0;
+		}
 	}
 
 	return 0;
@@ -100,8 +116,8 @@ adc_dma_receive(void* adc_buffer) {
 	__HAL_RCC_DMA2_CLK_ENABLE();
 
 	/*-----------------------Rx DMA-----------------------*/
-	uint32_t volatile *const ADC_DR   = (uint32_t *)(0x40004400 + 0x04);
-	uint32_t volatile *const USART2_CR3  = (uint32_t *)(0x40004400 + 0x14);
+	uint32_t volatile *const ADC_DR  	  = (uint32_t *)(0x40004400 + 0x04);
+	uint32_t volatile *const ADC_CR2   	  = (uint32_t *)(0x40012000 + 0x08);
 	uint32_t volatile *const DMA2_S0CR    = (uint32_t *)(0x40026400 + 0x10 + (0x18 * 0));
 	uint32_t volatile *const DMA2_S0NDTR  = (uint32_t *)(0x40026400 + 0x14 + (0x18 * 0));
 	uint32_t volatile *const DMA2_S0PAR   = (uint32_t *)(0x40026400 + 0x18 + (0x18 * 0));
@@ -110,18 +126,13 @@ adc_dma_receive(void* adc_buffer) {
 	*ADC_CR2 |= (1 << 8);						// Enable DMA for ADC
 	*ADC_CR2 |= (1 << 9);						// Enable Continuous Request
 
-	*DMA2_S0CR &= ~(0b111 << 25);				/*channel 6*/
-
 	*DMA2_S0NDTR = sizeof(adc_buffer);			/*number of data*/
-
 	*DMA2_S0PAR = (uint32_t)ADC_DR;				/*peripheral address*/
-
 	*DMA2_S0M0AR = (uint32_t)adc_buffer;		/*memory address*/
 
+	*DMA2_S0CR &= ~(0b111 << 25);				/*channel 6*/
 	*DMA2_S0CR |= (1 << 8);						/*circular mode*/
-
 	*DMA2_S0CR |= (1 << 10);					/*memory increment mode*/
-
 	*DMA2_S0CR |= (1 << 0);						/*DMA stream enable*/
 }
 
@@ -133,28 +144,17 @@ adc_dma_receive(void* adc_buffer) {
  */
 void
 adc_init() {
-	__HAL_RCC_GPIOE_CLK_ENABLE();
-	uint32_t volatile *const GPIOE_MODER   = (uint32_t *)(0x40021000 + 0x00);
-	*GPIOE_MODER &= ~(0b11 << 4);
-	*GPIOE_MODER |=  (0b11 << 4);
-
 	__HAL_RCC_ADC1_CLK_ENABLE();
 	uint32_t volatile *const ADC_CCR   	 = (uint32_t *)(0x40012304 + 0x00);
-	uint32_t volatile *const ADC_SR   	 = (uint32_t *)(0x40012000 + 0x00);
 	uint32_t volatile *const ADC_CR1   	 = (uint32_t *)(0x40012000 + 0x04);
 	uint32_t volatile *const ADC_CR2   	 = (uint32_t *)(0x40012000 + 0x08);
 	uint32_t volatile *const ADC_SMPR1   = (uint32_t *)(0x40012000 + 0x0c);
 
-	*ADC_CCR &= ~(0b11 << 16);		// prescaler = 0
-	*ADC_CR1 |= (1 << 8);			// scan mode
+	*ADC_CCR |= (1 << 16);			// ADCCLK = Fclk / 4
 	*ADC_CR1 &= ~(0b11 << 24);		// 12-bit resolution
-	*ADC_CR2 = (1 << 1);     		// enable continuous conversion mode
-	*ADC_CR2 |= (1 << 10);    		// EOC after each conversion
-	*ADC_CR2 &= ~(1 << 11);   		// Data Alignment RIGHT
-	*ADC_SMPR1 &= ~((0b111 << 24);  // Sampling time of 3 cycles for channel 1 and channel 4
-
-	*ADC_CR2 |= 1<<0;   			// enable ADC1
-	sys_delay_ms(1);				// delay to stable the init
+	*ADC_SMPR1 |= (7 << 24);
+	*ADC_CCR |= (1 << 23);			// wake up temp sensor and enable Vrefint
+	*ADC_CR2 |= (1 << 0);   		// wake up to enable ADC1
 }
 
 /*
@@ -170,4 +170,39 @@ adc_start() {
 
 	*ADC_SR = 0;        	// clear the status register
 	*ADC_CR2 |= (1<<30);  	// start the conversion
+}
+
+/*
+ * \brief
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
+uint32_t
+adc_read() {
+	uint16_t volatile *const ADC_DR   	 = (uint16_t *)(0x40012000 + 0x4c);
+	return *ADC_DR;
+}
+
+/*
+ * \brief
+ * \param[in]
+ * \param[out]
+ * \retval
+ */
+double
+adc_temp_read() {
+	double temp = 0, volt = 0;
+	uint16_t adc_val = adc_read();
+
+	volt = (float)adc_val * (3.3 / 4095);
+
+	if (volt > 0.76) {
+		temp = ((volt - 0.76) / 0.0025) + 25;
+	}
+	else {
+		temp = 25.0;
+	}
+
+	return temp;
 }

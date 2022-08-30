@@ -17,8 +17,6 @@
 void gpio_button_init();
 uint8_t gpio_button_read();
 
-uint32_t val = 0;
-
 /*
  *\brief
  *\param[in]
@@ -27,26 +25,18 @@ uint32_t val = 0;
  */
 int
 main() {
-	void (*boot_jump)(void);
-
+	HAL_Init();
+	gpio_button_init();
+	void (*boot_reset)(void);
 
 	if (gpio_button_read() == 1) {
-		val = *((uint32_t*)RESET_HANDLER_APPLICATION_1);
+		boot_reset = (void*)*((uint32_t*)RESET_HANDLER_APPLICATION_1);
 	}
 	else {
-		val = *((uint32_t*)RESET_HANDLER_APPLICATION_2);
+		boot_reset = (void*)*((uint32_t*)RESET_HANDLER_APPLICATION_2);
 	}
 
-	/*if (gpio_button_read() == 1) {
-		boot_jump = (void (*)(void))*((uint32_t*)RESET_HANDLER_APPLICATION_1);
-	}
-	else {
-		boot_jump = (void (*)(void))*((uint32_t*)RESET_HANDLER_APPLICATION_2);
-	}*/
-
-	boot_jump = val;
-
-	boot_jump();
+	boot_reset();
 
 	while (1) {
 
@@ -85,7 +75,7 @@ uint8_t
 gpio_button_read()
 {
 	uint32_t *GPIOA_IDR = (uint32_t *)(0x40020010);
-	if (((*GPIOA_IDR >> 1) & 1) == 1) {
+	if (((*GPIOA_IDR >> 0) & 1) == 1) {
 		return 1;
 	}
 	else {

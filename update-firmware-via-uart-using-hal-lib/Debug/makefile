@@ -52,6 +52,9 @@ default.size.stdout \
 OBJDUMP_LIST += \
 update-firmware-via-uart-using-hal-lib.list \
 
+OBJCOPY_BIN += \
+update-firmware-via-uart-using-hal-lib.bin \
+
 
 # All Target
 all: main-build
@@ -75,12 +78,17 @@ update-firmware-via-uart-using-hal-lib.list: $(EXECUTABLES) makefile objects.lis
 	@echo 'Finished building: $@'
 	@echo ' '
 
+update-firmware-via-uart-using-hal-lib.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "update-firmware-via-uart-using-hal-lib.bin"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
-	-$(RM) default.size.stdout update-firmware-via-uart-using-hal-lib.elf update-firmware-via-uart-using-hal-lib.list update-firmware-via-uart-using-hal-lib.map
+	-$(RM) default.size.stdout update-firmware-via-uart-using-hal-lib.bin update-firmware-via-uart-using-hal-lib.elf update-firmware-via-uart-using-hal-lib.list update-firmware-via-uart-using-hal-lib.map
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_BIN)
 
 fail-specified-linker-script-missing:
 	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'

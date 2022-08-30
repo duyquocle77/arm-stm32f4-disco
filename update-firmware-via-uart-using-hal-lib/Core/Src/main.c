@@ -63,7 +63,7 @@ DMA_HandleTypeDef hdma_usart2_rx;
 
 /* USER CODE BEGIN PV */
 uint8_t rx_dma_buffer[FIRMWARE_SIZE] = {0};
-uint8_t receive_done;
+uint8_t receive_done = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -77,7 +77,7 @@ void vectortable_move();
 void flash_lock() __attribute__((section(".FuncInRam")));
 void flash_unlock() __attribute__((section(".FuncInRam")));
 void flash_erase_sector(eSERTOR_t sector) __attribute__((section(".FuncInRam")));
-void flash_program_byte(void* address, uint8_t* buffer, uint8_t size) __attribute__((section(".FuncInRam")));
+void flash_program_byte(void* address, uint8_t* buffer, uint32_t size) __attribute__((section(".FuncInRam")));
 void reset_system() __attribute__((section(".FuncInRam")));
 void update_firmware() __attribute__((section(".FuncInRam")));
 /* USER CODE END PFP */
@@ -119,7 +119,7 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  vectortable_move();
+  //vectortable_move();
   HAL_UART_Receive_DMA(&huart2, rx_dma_buffer, sizeof(rx_dma_buffer));
   while (!receive_done);
   update_firmware();
@@ -333,7 +333,7 @@ flash_erase_sector(eSERTOR_t sector) {
  */
 __attribute__((section(".FuncInRam")))
 void
-flash_program_byte(void* address, uint8_t* buffer, uint8_t size) {
+flash_program_byte(void* address, uint8_t* buffer, uint32_t size) {
 	uint32_t volatile* const FLASH_SR   = (uint32_t*)(0x40023c00 + 0x0C);
 	uint32_t volatile* const FLASH_CR   = (uint32_t*)(0x40023c00 + 0x10);
 
@@ -344,9 +344,13 @@ flash_program_byte(void* address, uint8_t* buffer, uint8_t size) {
 	/*SET programming mode*/
 	*FLASH_CR |= (1 << 0);
 	/*write data*/
-	for (uint8_t i = 0; i < size; i++) {
-		*((uint8_t*)(address)++) = buffer[i];
-	}
+	uint8_t* flash = (uint8_t*)address;
+	for(uint32_t i = 0; i < size; i++) {
+		  *flash = *buffer;
+		   flash++;
+		   buffer++;
+		}
+
 	/*CLEAR programming mode*/
 	*FLASH_CR &= ~(1 << 0);
 	/*check BUSY bit*/
@@ -364,9 +368,9 @@ flash_program_byte(void* address, uint8_t* buffer, uint8_t size) {
 __attribute__((section(".FuncInRam")))
 void
 reset_system() {
-	uint32_t volatile* const AIRCR   = (uint32_t*)0xE000ED0C;
-	*AIRCR |= (0x5FA << 16);		// register key
-	*AIRCR |= (1 << 2);				// request a reset
+	uint32_t volatile* const AIRCR   = (uint32_t*)(0xE000ED0C);
+	*AIRCR = (0x5FA << 16)|(1 << 2);		// register key
+	//*AIRCR |= (1 << 2);				// request a reset
 }
 
 

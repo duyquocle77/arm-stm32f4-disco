@@ -1,3 +1,3 @@
-../Core/Src/main.c:29:1:main	16	static
-../Core/Src/main.c:65:1:gpio_button_init	24	static
-../Core/Src/main.c:85:1:gpio_button_read	16	static
+../Core/Src/main.c:27:1:main	16	static
+../Core/Src/main.c:55:1:gpio_button_init	24	static
+../Core/Src/main.c:75:1:gpio_button_read	16	static

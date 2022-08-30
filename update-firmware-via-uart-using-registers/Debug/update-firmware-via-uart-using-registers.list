@@ -7,43 +7,43 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, ALLOC, LOAD, READONLY, DATA
   1 .text         00000458  08000198  08000198  00010198  2**3
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .rodata       00000000  080005f0  080005f0  000205e0  2**0
+  2 .rodata       00000000  080005f0  080005f0  000205dc  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  3 .ARM.extab    00000000  080005f0  080005f0  000205e0  2**0
+  3 .ARM.extab    00000000  080005f0  080005f0  000205dc  2**0
                   CONTENTS
-  4 .ARM          00000000  080005f0  080005f0  000205e0  2**0
+  4 .ARM          00000000  080005f0  080005f0  000205dc  2**0
                   CONTENTS
-  5 .preinit_array 00000000  080005f0  080005f0  000205e0  2**0
+  5 .preinit_array 00000000  080005f0  080005f0  000205dc  2**0
                   CONTENTS, ALLOC, LOAD, DATA
   6 .init_array   00000004  080005f0  080005f0  000105f0  2**2
                   CONTENTS, ALLOC, LOAD, DATA
   7 .fini_array   00000004  080005f4  080005f4  000105f4  2**2
                   CONTENTS, ALLOC, LOAD, DATA
-  8 .data         000001e0  20000400  080005f8  00020400  2**2
+  8 .data         000001dc  20000400  080005f8  00020400  2**2
                   CONTENTS, ALLOC, LOAD, CODE
-  9 .bss          000016e0  200005e0  080007d8  000205e0  2**2
+  9 .bss          000016e0  200005dc  080007d4  000205dc  2**2
                   ALLOC
- 10 ._user_heap_stack 00000600  20001cc0  080007d8  00021cc0  2**0
+ 10 ._user_heap_stack 00000604  20001cbc  080007d4  00021cbc  2**0
                   ALLOC
- 11 .ARM.attributes 00000030  00000000  00000000  000205e0  2**0
+ 11 .ARM.attributes 00000030  00000000  00000000  000205dc  2**0
                   CONTENTS, READONLY
- 12 .debug_info   0000167f  00000000  00000000  00020610  2**0
+ 12 .debug_info   0000168f  00000000  00000000  0002060c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 0000062b  00000000  00000000  00021c8f  2**0
+ 13 .debug_abbrev 0000062b  00000000  00000000  00021c9b  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00000218  00000000  00000000  000222c0  2**3
+ 14 .debug_aranges 00000218  00000000  00000000  000222c8  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_ranges 000001d0  00000000  00000000  000224d8  2**3
+ 15 .debug_ranges 000001d0  00000000  00000000  000224e0  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  000148a8  00000000  00000000  000226a8  2**0
+ 16 .debug_macro  000148a8  00000000  00000000  000226b0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00002aa7  00000000  00000000  00036f50  2**0
+ 17 .debug_line   00002aaa  00000000  00000000  00036f58  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    00082659  00000000  00000000  000399f7  2**0
+ 18 .debug_str    00082659  00000000  00000000  00039a02  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000050  00000000  00000000  000bc050  2**0
+ 19 .comment      00000050  00000000  00000000  000bc05b  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  000006f0  00000000  00000000  000bc0a0  2**2
+ 20 .debug_frame  000006f0  00000000  00000000  000bc0ac  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -60,7 +60,7 @@ Disassembly of section .text:
  80001aa:	2301      	movs	r3, #1
  80001ac:	7023      	strb	r3, [r4, #0]
  80001ae:	bd10      	pop	{r4, pc}
- 80001b0:	200005e0 	.word	0x200005e0
+ 80001b0:	200005dc 	.word	0x200005dc
  80001b4:	00000000 	.word	0x00000000
  80001b8:	080005d0 	.word	0x080005d0
 
@@ -73,7 +73,7 @@ Disassembly of section .text:
  80001c6:	f3af 8000 	nop.w
  80001ca:	bd08      	pop	{r3, pc}
  80001cc:	00000000 	.word	0x00000000
- 80001d0:	200005e4 	.word	0x200005e4
+ 80001d0:	200005e0 	.word	0x200005e0
  80001d4:	080005d0 	.word	0x080005d0
 
 080001d8 <main>:
@@ -105,7 +105,7 @@ main() {
 
 	while (1) {
  80001fa:	e7fe      	b.n	80001fa <main+0x22>
- 80001fc:	200005fc 	.word	0x200005fc
+ 80001fc:	200005f8 	.word	0x200005f8
 
 08000200 <vectortable_move>:
  *\param[out]
@@ -312,7 +312,7 @@ dma_init() {
  8000340:	400260bc 	.word	0x400260bc
  8000344:	400260c0 	.word	0x400260c0
  8000348:	400260c4 	.word	0x400260c4
- 800034c:	20000600 	.word	0x20000600
+ 800034c:	200005fc 	.word	0x200005fc
 
 08000350 <uart_init>:
  * \param[in]
@@ -499,7 +499,7 @@ dma_transfer_handler() {
  800046a:	f85d 7b04 	ldr.w	r7, [sp], #4
  800046e:	4770      	bx	lr
  8000470:	4002600c 	.word	0x4002600c
- 8000474:	200005fc 	.word	0x200005fc
+ 8000474:	200005f8 	.word	0x200005f8
 
 08000478 <NMI_Handler>:
 /******************************************************************************/
@@ -771,13 +771,13 @@ LoopFillZerobss:
   ldr r0, =_sdata
  800052c:	20000400 	.word	0x20000400
   ldr r1, =_edata
- 8000530:	200005e0 	.word	0x200005e0
+ 8000530:	200005dc 	.word	0x200005dc
   ldr r2, =_sidata
  8000534:	080005f8 	.word	0x080005f8
   ldr r2, =_sbss
- 8000538:	200005e0 	.word	0x200005e0
+ 8000538:	200005dc 	.word	0x200005dc
   ldr r4, =_ebss
- 800053c:	20001cc0 	.word	0x20001cc0
+ 800053c:	20001cbc 	.word	0x20001cbc
 
 08000540 <ADC_IRQHandler>:
  * @retval None       
@@ -814,7 +814,7 @@ __weak void HAL_IncTick(void)
  8000560:	4770      	bx	lr
  8000562:	bf00      	nop
  8000564:	20000400 	.word	0x20000400
- 8000568:	20001cbc 	.word	0x20001cbc
+ 8000568:	20001cb8 	.word	0x20001cb8
 
 0800056c <__libc_init_array>:
  800056c:	b570      	push	{r4, r5, r6, lr}
@@ -878,7 +878,7 @@ __weak void HAL_IncTick(void)
 
 080005e8 <__update_firmware_veneer>:
  80005e8:	f85f f000 	ldr.w	pc, [pc]	; 80005ec <__update_firmware_veneer+0x4>
- 80005ec:	200005bd 	.word	0x200005bd
+ 80005ec:	200005b9 	.word	0x200005b9
 
 Disassembly of section .data:
 
@@ -1054,147 +1054,148 @@ flash_erase_sector(eSERTOR_t sector) {
  *\retval
  */
 void
-flash_program_byte(void* address, uint8_t* buffer, uint8_t size) {
+flash_program_byte(void* address, uint8_t* buffer, uint32_t size) {
 200004f8:	b580      	push	{r7, lr}
 200004fa:	b088      	sub	sp, #32
 200004fc:	af00      	add	r7, sp, #0
 200004fe:	60f8      	str	r0, [r7, #12]
 20000500:	60b9      	str	r1, [r7, #8]
-20000502:	4613      	mov	r3, r2
-20000504:	71fb      	strb	r3, [r7, #7]
+20000502:	607a      	str	r2, [r7, #4]
 	uint32_t volatile* const FLASH_SR   = (uint32_t*)(0x40023c00 + 0x0C);
-20000506:	4b1d      	ldr	r3, [pc, #116]	; (2000057c <flash_program_byte+0x84>)
-20000508:	61bb      	str	r3, [r7, #24]
+20000504:	4b1e      	ldr	r3, [pc, #120]	; (20000580 <flash_program_byte+0x88>)
+20000506:	617b      	str	r3, [r7, #20]
 	uint32_t volatile* const FLASH_CR   = (uint32_t*)(0x40023c00 + 0x10);
-2000050a:	4b1d      	ldr	r3, [pc, #116]	; (20000580 <flash_program_byte+0x88>)
-2000050c:	617b      	str	r3, [r7, #20]
+20000508:	4b1e      	ldr	r3, [pc, #120]	; (20000584 <flash_program_byte+0x8c>)
+2000050a:	613b      	str	r3, [r7, #16]
 
 	flash_unlock();
-2000050e:	f7ff ff93 	bl	20000438 <flash_unlock>
+2000050c:	f7ff ff94 	bl	20000438 <flash_unlock>
 
 	/*check BUSY bit*/
 	while (((*FLASH_SR >> 16) & 1) == 1) {}
-20000512:	bf00      	nop
-20000514:	69bb      	ldr	r3, [r7, #24]
-20000516:	681b      	ldr	r3, [r3, #0]
-20000518:	0c1b      	lsrs	r3, r3, #16
-2000051a:	f003 0301 	and.w	r3, r3, #1
-2000051e:	2b01      	cmp	r3, #1
-20000520:	d0f8      	beq.n	20000514 <flash_program_byte+0x1c>
+20000510:	bf00      	nop
+20000512:	697b      	ldr	r3, [r7, #20]
+20000514:	681b      	ldr	r3, [r3, #0]
+20000516:	0c1b      	lsrs	r3, r3, #16
+20000518:	f003 0301 	and.w	r3, r3, #1
+2000051c:	2b01      	cmp	r3, #1
+2000051e:	d0f8      	beq.n	20000512 <flash_program_byte+0x1a>
 	/*SET programming mode*/
 	*FLASH_CR |= (1 << 0);
-20000522:	697b      	ldr	r3, [r7, #20]
-20000524:	681b      	ldr	r3, [r3, #0]
-20000526:	f043 0201 	orr.w	r2, r3, #1
-2000052a:	697b      	ldr	r3, [r7, #20]
-2000052c:	601a      	str	r2, [r3, #0]
+20000520:	693b      	ldr	r3, [r7, #16]
+20000522:	681b      	ldr	r3, [r3, #0]
+20000524:	f043 0201 	orr.w	r2, r3, #1
+20000528:	693b      	ldr	r3, [r7, #16]
+2000052a:	601a      	str	r2, [r3, #0]
 	/*write data*/
-	for (uint8_t i = 0; i < size; i++) {
-2000052e:	2300      	movs	r3, #0
-20000530:	77fb      	strb	r3, [r7, #31]
-20000532:	e00a      	b.n	2000054a <flash_program_byte+0x52>
-		*((uint8_t*)(address)++) = buffer[i];
-20000534:	7ffb      	ldrb	r3, [r7, #31]
-20000536:	68ba      	ldr	r2, [r7, #8]
-20000538:	441a      	add	r2, r3
-2000053a:	68fb      	ldr	r3, [r7, #12]
-2000053c:	1c59      	adds	r1, r3, #1
-2000053e:	60f9      	str	r1, [r7, #12]
-20000540:	7812      	ldrb	r2, [r2, #0]
-20000542:	701a      	strb	r2, [r3, #0]
-	for (uint8_t i = 0; i < size; i++) {
-20000544:	7ffb      	ldrb	r3, [r7, #31]
+	uint8_t* flash = (uint8_t*)address;
+2000052c:	68fb      	ldr	r3, [r7, #12]
+2000052e:	61fb      	str	r3, [r7, #28]
+	for(uint32_t i = 0; i < size; i++) {
+20000530:	2300      	movs	r3, #0
+20000532:	61bb      	str	r3, [r7, #24]
+20000534:	e00c      	b.n	20000550 <flash_program_byte+0x58>
+	  *flash = *buffer;
+20000536:	68bb      	ldr	r3, [r7, #8]
+20000538:	781a      	ldrb	r2, [r3, #0]
+2000053a:	69fb      	ldr	r3, [r7, #28]
+2000053c:	701a      	strb	r2, [r3, #0]
+	   flash++;
+2000053e:	69fb      	ldr	r3, [r7, #28]
+20000540:	3301      	adds	r3, #1
+20000542:	61fb      	str	r3, [r7, #28]
+	   buffer++;
+20000544:	68bb      	ldr	r3, [r7, #8]
 20000546:	3301      	adds	r3, #1
-20000548:	77fb      	strb	r3, [r7, #31]
-2000054a:	7ffa      	ldrb	r2, [r7, #31]
-2000054c:	79fb      	ldrb	r3, [r7, #7]
-2000054e:	429a      	cmp	r2, r3
-20000550:	d3f0      	bcc.n	20000534 <flash_program_byte+0x3c>
+20000548:	60bb      	str	r3, [r7, #8]
+	for(uint32_t i = 0; i < size; i++) {
+2000054a:	69bb      	ldr	r3, [r7, #24]
+2000054c:	3301      	adds	r3, #1
+2000054e:	61bb      	str	r3, [r7, #24]
+20000550:	69ba      	ldr	r2, [r7, #24]
+20000552:	687b      	ldr	r3, [r7, #4]
+20000554:	429a      	cmp	r2, r3
+20000556:	d3ee      	bcc.n	20000536 <flash_program_byte+0x3e>
 	}
 	/*CLEAR programming mode*/
 	*FLASH_CR &= ~(1 << 0);
-20000552:	697b      	ldr	r3, [r7, #20]
-20000554:	681b      	ldr	r3, [r3, #0]
-20000556:	f023 0201 	bic.w	r2, r3, #1
-2000055a:	697b      	ldr	r3, [r7, #20]
-2000055c:	601a      	str	r2, [r3, #0]
+20000558:	693b      	ldr	r3, [r7, #16]
+2000055a:	681b      	ldr	r3, [r3, #0]
+2000055c:	f023 0201 	bic.w	r2, r3, #1
+20000560:	693b      	ldr	r3, [r7, #16]
+20000562:	601a      	str	r2, [r3, #0]
 	/*check BUSY bit*/
 	while (((*FLASH_SR >> 16) & 1) == 1) {}
-2000055e:	bf00      	nop
-20000560:	69bb      	ldr	r3, [r7, #24]
-20000562:	681b      	ldr	r3, [r3, #0]
-20000564:	0c1b      	lsrs	r3, r3, #16
-20000566:	f003 0301 	and.w	r3, r3, #1
-2000056a:	2b01      	cmp	r3, #1
-2000056c:	d0f8      	beq.n	20000560 <flash_program_byte+0x68>
+20000564:	bf00      	nop
+20000566:	697b      	ldr	r3, [r7, #20]
+20000568:	681b      	ldr	r3, [r3, #0]
+2000056a:	0c1b      	lsrs	r3, r3, #16
+2000056c:	f003 0301 	and.w	r3, r3, #1
+20000570:	2b01      	cmp	r3, #1
+20000572:	d0f8      	beq.n	20000566 <flash_program_byte+0x6e>
 
 	flash_lock();
-2000056e:	f7ff ff49 	bl	20000404 <flash_lock>
+20000574:	f7ff ff46 	bl	20000404 <flash_lock>
 }
-20000572:	bf00      	nop
-20000574:	3720      	adds	r7, #32
-20000576:	46bd      	mov	sp, r7
-20000578:	bd80      	pop	{r7, pc}
-2000057a:	bf00      	nop
-2000057c:	40023c0c 	.word	0x40023c0c
-20000580:	40023c10 	.word	0x40023c10
+20000578:	bf00      	nop
+2000057a:	3720      	adds	r7, #32
+2000057c:	46bd      	mov	sp, r7
+2000057e:	bd80      	pop	{r7, pc}
+20000580:	40023c0c 	.word	0x40023c0c
+20000584:	40023c10 	.word	0x40023c10
 
-20000584 <reset_system>:
+20000588 <reset_system>:
  *\param[in]
  *\param[out]
  *\retval
  */
 void
 reset_system() {
-20000584:	b480      	push	{r7}
-20000586:	b083      	sub	sp, #12
-20000588:	af00      	add	r7, sp, #0
+20000588:	b480      	push	{r7}
+2000058a:	b083      	sub	sp, #12
+2000058c:	af00      	add	r7, sp, #0
 	uint32_t volatile* const AIRCR   = (uint32_t*)0xE000ED0C;
-2000058a:	4b0b      	ldr	r3, [pc, #44]	; (200005b8 <reset_system+0x34>)
-2000058c:	607b      	str	r3, [r7, #4]
-	*AIRCR |= (0x5FA << 16);		// register key
-2000058e:	687b      	ldr	r3, [r7, #4]
-20000590:	681b      	ldr	r3, [r3, #0]
-20000592:	f043 63bf 	orr.w	r3, r3, #100139008	; 0x5f80000
-20000596:	f443 3300 	orr.w	r3, r3, #131072	; 0x20000
-2000059a:	687a      	ldr	r2, [r7, #4]
-2000059c:	6013      	str	r3, [r2, #0]
+2000058e:	4b08      	ldr	r3, [pc, #32]	; (200005b0 <reset_system+0x28>)
+20000590:	607b      	str	r3, [r7, #4]
+	*AIRCR = (0x5FA << 16);			// register key
+20000592:	687b      	ldr	r3, [r7, #4]
+20000594:	4a07      	ldr	r2, [pc, #28]	; (200005b4 <reset_system+0x2c>)
+20000596:	601a      	str	r2, [r3, #0]
 	*AIRCR |= (1 << 2);				// request a reset
-2000059e:	687b      	ldr	r3, [r7, #4]
-200005a0:	681b      	ldr	r3, [r3, #0]
-200005a2:	f043 0204 	orr.w	r2, r3, #4
-200005a6:	687b      	ldr	r3, [r7, #4]
-200005a8:	601a      	str	r2, [r3, #0]
+20000598:	687b      	ldr	r3, [r7, #4]
+2000059a:	681b      	ldr	r3, [r3, #0]
+2000059c:	f043 0204 	orr.w	r2, r3, #4
+200005a0:	687b      	ldr	r3, [r7, #4]
+200005a2:	601a      	str	r2, [r3, #0]
 }
-200005aa:	bf00      	nop
-200005ac:	370c      	adds	r7, #12
-200005ae:	46bd      	mov	sp, r7
-200005b0:	f85d 7b04 	ldr.w	r7, [sp], #4
-200005b4:	4770      	bx	lr
-200005b6:	bf00      	nop
-200005b8:	e000ed0c 	.word	0xe000ed0c
+200005a4:	bf00      	nop
+200005a6:	370c      	adds	r7, #12
+200005a8:	46bd      	mov	sp, r7
+200005aa:	f85d 7b04 	ldr.w	r7, [sp], #4
+200005ae:	4770      	bx	lr
+200005b0:	e000ed0c 	.word	0xe000ed0c
+200005b4:	05fa0000 	.word	0x05fa0000
 
-200005bc <update_firmware>:
+200005b8 <update_firmware>:
  *\param[in]
  *\param[out]
  *\retval
  */
 void
 update_firmware() {
-200005bc:	b580      	push	{r7, lr}
-200005be:	af00      	add	r7, sp, #0
+200005b8:	b580      	push	{r7, lr}
+200005ba:	af00      	add	r7, sp, #0
 	flash_erase_sector(SECTOR_0);
-200005c0:	2000      	movs	r0, #0
-200005c2:	f7ff ff5b 	bl	2000047c <flash_erase_sector>
+200005bc:	2000      	movs	r0, #0
+200005be:	f7ff ff5d 	bl	2000047c <flash_erase_sector>
 	flash_program_byte((void*)SECTOR_0_BASE_ADDR, rx_dma_buffer, sizeof(rx_dma_buffer));
-200005c6:	22bc      	movs	r2, #188	; 0xbc
-200005c8:	4904      	ldr	r1, [pc, #16]	; (200005dc <update_firmware+0x20>)
-200005ca:	f04f 6000 	mov.w	r0, #134217728	; 0x8000000
-200005ce:	f7ff ff93 	bl	200004f8 <flash_program_byte>
+200005c2:	f241 62bc 	movw	r2, #5820	; 0x16bc
+200005c6:	4904      	ldr	r1, [pc, #16]	; (200005d8 <update_firmware+0x20>)
+200005c8:	f04f 6000 	mov.w	r0, #134217728	; 0x8000000
+200005cc:	f7ff ff94 	bl	200004f8 <flash_program_byte>
 	reset_system();
-200005d2:	f7ff ffd7 	bl	20000584 <reset_system>
+200005d0:	f7ff ffda 	bl	20000588 <reset_system>
 }
-200005d6:	bf00      	nop
-200005d8:	bd80      	pop	{r7, pc}
-200005da:	bf00      	nop
-200005dc:	20000600 	.word	0x20000600
+200005d4:	bf00      	nop
+200005d6:	bd80      	pop	{r7, pc}
+200005d8:	200005fc 	.word	0x200005fc

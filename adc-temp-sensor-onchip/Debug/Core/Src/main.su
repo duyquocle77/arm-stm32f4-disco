@@ -1,0 +1,9 @@
+../Core/Src/main.c:25:1:main	8	static
+../Core/Src/main.c:58:1:vectortable_move	24	static
+../Core/Src/main.c:77:1:tim_systick_init	16	static
+../Core/Src/main.c:99:1:sys_delay_ms	24	static
+../Core/Src/main.c:115:1:adc_dma_receive	48	static
+../Core/Src/main.c:146:1:adc_init	40	static
+../Core/Src/main.c:173:1:adc_start	16	static
+../Core/Src/main.c:188:1:adc_read	16	static
+../Core/Src/main.c:200:1:adc_temp_read	32	static
