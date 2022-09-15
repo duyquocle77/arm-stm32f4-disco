@@ -18,3 +18,13 @@ x_h
 x_l
 y_h
 y_l
+firmware_buffer
+receive_done
+val
+adc_dma_buffer
+adc_val
+flag
+gpio_button_read()
+temp
+volt
+Temp

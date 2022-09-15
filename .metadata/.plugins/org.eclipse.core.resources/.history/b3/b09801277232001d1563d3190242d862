@@ -1,0 +1,43 @@
+#include "main.h"
+
+void rcc_iwdg_init();
+
+
+
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+int
+main() {
+	rcc_iwdg_init();
+
+	while (1) {
+
+	}
+
+	return 0;
+}
+
+
+/*
+ *\brief
+ *\param[in]
+ *\param[out]
+ *\retval
+ */
+void
+rcc_iwdg_init() {
+	uint32_t volatile* const IWDG_KR   = (uint32_t*)(0x40003000 + 0x00);
+	uint32_t volatile* const IWDG_PR   = (uint32_t*)(0x40003000 + 0x04);
+	uint32_t volatile* const IWDG_RLR  = (uint32_t*)(0x40003000 + 0x08);
+
+	*IWDG_KR = 0x5555;		/* enable access IWDG*/
+	*IWDG_PR = 40 - 1;		/* set pre-scaler*/
+	*IWDG_RLR = 4095;		/* set reload value*/
+	*IWDG_KR = 0xAAAA;
+	*IWDG_KR = 0xCCCC;		/* start IWDG*/
+}
+

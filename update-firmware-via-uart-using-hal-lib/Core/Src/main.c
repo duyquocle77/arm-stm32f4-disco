@@ -21,6 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
 #include <string.h>
 /* USER CODE END Includes */
 
@@ -120,8 +121,12 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   //vectortable_move();
+  printf("Starting update firmware\n");
   HAL_UART_Receive_DMA(&huart2, rx_dma_buffer, sizeof(rx_dma_buffer));
-  while (!receive_done);
+  while (!receive_done) {
+	  printf("Downloading ...\n");
+  }
+  printf("Success! Full download\n");
   update_firmware();
   /* USER CODE END 2 */
 

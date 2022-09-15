@@ -1,17 +1,10 @@
-09:55:01 **** Incremental Build of configuration Debug for project gpio-button-onchip ****
+08:35:39 **** Incremental Build of configuration Debug for project gpio-button-onchip ****
 make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-arm-none-eabi-gcc -o "gpio-button-onchip.elf" @"objects.list"   -mcpu=cortex-m4 -T"D:\LeDuyQuoc\arm-stm32f411ve-discovery\stm32cubeide\f411vet6-disco\gpio-button-onchip\STM32F411VETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="gpio-button-onchip.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: gpio-button-onchip.elf
- 
 arm-none-eabi-size   gpio-button-onchip.elf 
-arm-none-eabi-objdump -h -S  gpio-button-onchip.elf  > "gpio-button-onchip.list"
    text	   data	    bss	    dec	    hex	filename
    2000	     20	   1572	   3592	    e08	gpio-button-onchip.elf
 Finished building: default.size.stdout
  
-Finished building: gpio-button-onchip.list
- 
 
-09:55:02 Build Finished. 0 errors, 0 warnings. (took 852ms)
+08:35:39 Build Finished. 0 errors, 0 warnings. (took 246ms)
 

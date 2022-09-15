@@ -1,21 +1,10 @@
-20:39:40 **** Incremental Build of configuration Debug for project update-firmware-via-uart-using-registers ****
+16:08:27 **** Incremental Build of configuration Debug for project update-firmware-via-uart-using-registers ****
 make -j8 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -c -I../Core/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc -I../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c: In function 'update_firmware':
-../Core/Src/main.c:327:63: warning: conversion from 'unsigned int' to 'uint8_t' {aka 'unsigned char'} changes value from '5820' to '188' [-Woverflow]
-  327 |  flash_program_byte((void*)SECTOR_0_BASE_ADDR, rx_dma_buffer, sizeof(rx_dma_buffer));
-      |                                                               ^~~~~~~~~~~~~~~~~~~~~
-arm-none-eabi-gcc -o "update-firmware-via-uart-using-registers.elf" @"objects.list"   -mcpu=cortex-m4 -T"D:\LeDuyQuoc\arm-stm32f411ve-discovery\stm32cubeide\f411vet6-disco\update-firmware-via-uart-using-registers\STM32F411VETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="update-firmware-via-uart-using-registers.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: update-firmware-via-uart-using-registers.elf
- 
 arm-none-eabi-size   update-firmware-via-uart-using-registers.elf 
-arm-none-eabi-objdump -h -S  update-firmware-via-uart-using-registers.elf  > "update-firmware-via-uart-using-registers.list"
    text	   data	    bss	    dec	    hex	filename
-   1508	     12	   7396	   8916	   22d4	update-firmware-via-uart-using-registers.elf
+   1996	      8	   7396	   9400	   24b8	update-firmware-via-uart-using-registers.elf
 Finished building: default.size.stdout
  
-Finished building: update-firmware-via-uart-using-registers.list
- 
 
-20:39:40 Build Finished. 0 errors, 1 warnings. (took 735ms)
+16:08:28 Build Finished. 0 errors, 0 warnings. (took 377ms)
 

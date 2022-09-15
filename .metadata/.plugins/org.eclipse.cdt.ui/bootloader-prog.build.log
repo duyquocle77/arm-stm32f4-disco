@@ -1,0 +1,10 @@
+16:18:54 **** Build of configuration Debug for project bootloader-prog ****
+make -j8 all 
+arm-none-eabi-size   bootloader-prog.elf 
+   text	   data	    bss	    dec	    hex	filename
+   1704	     20	   1572	   3296	    ce0	bootloader-prog.elf
+Finished building: default.size.stdout
+ 
+
+16:18:55 Build Finished. 0 errors, 0 warnings. (took 309ms)
+

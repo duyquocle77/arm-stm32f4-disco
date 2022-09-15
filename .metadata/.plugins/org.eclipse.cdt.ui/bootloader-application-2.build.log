@@ -1,0 +1,19 @@
+15:52:25 **** Incremental Build of configuration Debug for project bootloader-application-2 ****
+make -j8 all 
+arm-none-eabi-gcc -o "bootloader-application-2.elf" @"objects.list"   -mcpu=cortex-m4 -T"D:\LeDuyQuoc\arm-stm32f411ve-discovery\stm32cubeide\f411vet6-disco\bootloader-application-2\STM32F411VETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="bootloader-application-2.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: bootloader-application-2.elf
+ 
+arm-none-eabi-size   bootloader-application-2.elf 
+arm-none-eabi-objdump -h -S  bootloader-application-2.elf  > "bootloader-application-2.list"
+arm-none-eabi-objcopy  -O binary  bootloader-application-2.elf  "bootloader-application-2.bin"
+   text	   data	    bss	    dec	    hex	filename
+   1828	     20	   1572	   3420	    d5c	bootloader-application-2.elf
+Finished building: default.size.stdout
+ 
+Finished building: bootloader-application-2.bin
+Finished building: bootloader-application-2.list
+ 
+ 
+
+15:52:25 Build Finished. 0 errors, 0 warnings. (took 545ms)
+
